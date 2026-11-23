@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_151920) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_163008) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,13 +49,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_151920) do
     t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
-  create_table "smokerprofiles", force: :cascade do |t|
+  create_table "smoker_profiles", force: :cascade do |t|
     t.string "name"
     t.string "cigarette_type"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_smokerprofiles_on_user_id"
+    t.index ["user_id"], name: "index_smoker_profiles_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,8 +74,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_151920) do
   end
 
   add_foreign_key "chats", "users"
-  add_foreign_key "cigarettes", "smokerprofiles"
-  add_foreign_key "e_cigarettes", "smokerprofiles"
+  add_foreign_key "cigarettes", "smoker_profiles", column: "smokerprofile_id"
+  add_foreign_key "e_cigarettes", "smoker_profiles", column: "smokerprofile_id"
   add_foreign_key "messages", "chats"
-  add_foreign_key "smokerprofiles", "users"
+  add_foreign_key "smoker_profiles", "users"
 end
