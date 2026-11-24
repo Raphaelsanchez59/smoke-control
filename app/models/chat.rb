@@ -5,67 +5,67 @@ class Chat < ApplicationRecord
   STEPS = {
     # Début
     "smoker" => {
-      question: "Es-tu fumeur ?",
-      choices: { "Oui" => "birth", "Non" => "ex_smoker" }
+      question: "Are you a smoker ?",
+      choices: { "Yes" => "birth", "No" => "ex_smoker" }
     },
     "ex_smoker" => {
-      question: "As-tu déjà été fumeur ?",
-      choices: { "Oui" => "birth", "Non" => "never" }
+      question: "Did you ever smoke ?",
+      choices: { "Yes" => "birth", "No" => "never" }
     },
     "birth" => {
-      question: "Quels sont ton mois et ton année de naissance ?",
+      question: "When were you born ?",
       next: "start"
     },
     "start" => {
-      question: "Quand as-tu commencé à fumer ? (approximativement)",
+      question: "When did you start smoking ? (approximately)",
       next: "product"
     },
     "product" => {
-      question: "Que fumes-tu ?",
+      question: "What do you smoke ?",
       choices: {
-        "Cigarettes" => "cig_brand",
-        "Cigarette électronique" => "ecig_type",
-        "Les deux" => "both_cig_brand"
+        "Cigarets" => "cig_brand",
+        "Electronic cigaret" => "ecig_type",
+        "Both" => "both_cig_brand"
       }
     },
     # --- Cigarettes seules ---
     "cig_brand" => {
-      question: "Quelle marque de cigarette fumes-tu ?",
+      question: "Which brand do you smoke ?",
       next: "cig_per_day"
     },
     "cig_per_day" => {
-      question: "Combien de cigarettes fumes-tu par jour ?",
+      question: "How many cigarets per day ?",
       next: "done"
     },
     # --- Les deux : cigarettes, puis cigarette électronique ---
     "both_cig_brand" => {
-      question: "Quelle marque de cigarette fumes-tu ?",
+      question: "Which brand do you smoke ?",
       next: "both_cig_per_day"
     },
     "both_cig_per_day" => {
-      question: "Combien de cigarettes fumes-tu par jour ?",
+      question: "How many cigarets per day ?",
       next: "ecig_type"
     },
     # --- Cigarette électronique ---
     "ecig_type" => {
-      question: "Quel type de cigarette électronique ?",
-      choices: { "Puff jetable" => "puff_nicotine", "Rechargeable" => "refill_nicotine" }
+      question: "Which type of electronic cigaret do you smoke ?",
+      choices: { "Disposable vape" => "puff_nicotine", "Rechargeable" => "refill_nicotine" }
     },
     # Puff jetable
     "puff_nicotine" => {
-      question: "Quel taux de nicotine ?",
+      question: "What nicotine level ?",
       choices: { "0 mg/ml" => "puff_count", "10 mg/ml" => "puff_count", "20 mg/ml" => "puff_count" }
     },
     "puff_count" => {
-      question: "Combien de bouffées annoncées sur ta puff ?",
+      question: "How many puffs is your disposable vape advertised to have ?",
       next: "puff_price"
     },
     "puff_price" => {
-      question: "Combien coûte une puff (en €) ?",
+      question: "How much does a disposable vape cost (in €) ?",
       next: "puff_duration"
     },
     "puff_duration" => {
-      question: "Combien de jours te dure une puff ? (ex : 10 à 14)",
+      question: "How many days does a disposable vape (puff) last you ? (ex: 10 to 14) ",
       next: "done"
     },
     # Rechargeable
@@ -75,16 +75,16 @@ class Chat < ApplicationRecord
                  "20 mg/ml" => "refill_ml" }
     },
     "refill_ml" => {
-      question: "Combien de ml d'e-liquide utilises-tu par semaine ?",
+      question: "What is the nicotine level in your e-liquid ?",
       next: "refill_price"
     },
     "refill_price" => {
-      question: "Combien coûte ton flacon de 10 ml (en €) ?",
+      question: "How much does your 10 ml bottle cost (in €) ?",
       next: "done"
     },
     # Fins
-    "never" => { question: "Bravo, tu n'as jamais fumé ! Ce coach ne te sera pas utile." },
-    "done" => { question: "Merci ! Je calcule ton bilan nicotine…" }
+    "never" => { question: "Well done—you’ve never smoked! This coach won’t be of any use to you." },
+    "done" => { question: "Thanks! I’m calculating your smoker profile…" }
   }
 
   # L'étape en cours (question + choix ou next)
