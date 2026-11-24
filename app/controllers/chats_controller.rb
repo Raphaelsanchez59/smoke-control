@@ -5,9 +5,10 @@ class ChatsController < ApplicationController
   end
 
   def create
-    @chat = Chat.new(title: "Mon bilan nicotine")
+    @chat = Chat.new(title: "My smoking profile")
     @chat.user = current_user
     if @chat.save
+      @chat.start
       flash[:chat_access] = true
       session[:chat_id] = @chat.id
       redirect_to chat_path(@chat)
@@ -18,9 +19,8 @@ class ChatsController < ApplicationController
 
   def show
     @chat = Chat.find(params[:id])
-    return redirect_to new_chat_path unless access_allowed?
-
     @message = Message.new
+    return redirect_to new_chat_path unless access_allowed?
   end
 
   private

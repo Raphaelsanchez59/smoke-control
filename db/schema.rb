@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_131801) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "step", default: "smoker"
     t.index ["user_id"], name: "index_chats_on_user_id"
   end
 
