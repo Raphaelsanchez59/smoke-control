@@ -4,19 +4,25 @@
     <h1 class="display-4 fw-bold">Smoke Control</h1>
     <p class="lead text-muted">How much time do you have left to live?</p>
   </section>
+
+
   <%# Card Chatbot centrée %>
   <%# Card Chatbot centrée %>
   <section class="row justify-content-center mb-5">
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body p-4 text-center">
+          <% unless user_signed_in? %>
           <p class="h5 fw-semibold mb-4">Are you a smoker?</p>
+          <% else %>
+          <p class="h5 fw-semibold mb-4">Would u want another profile?</p>
+          <% end %>
           <div class="d-flex justify-content-center gap-3">
             <%= link_to "Yes", new_chat_path, class: "btn btn-dark px-4" %>
             <button type="button"
-        class="btn btn-outline-secondary px-4"
-        onclick="alert('Super continu comme ca')">
-              No
+            class="btn btn-outline-secondary px-4"
+            onclick="alert('<%= user_signed_in? ? "Ok" : "Super, continue comme ça !" %>')">
+            No
             </button>
           </div>
           <div id="no-smoke-msg" class="alert alert-success mt-4 mb-0 d-none">
@@ -26,45 +32,48 @@
       </div>
     </div>
   </section>
-  <%# Section Smoker Profiles (3 cartes par ligne) %>
-  <section class="card shadow-sm">
-    <div class="card-body p-4">
-      <div class="text-center mb-4">
-        <h2 class="h3 fw-bold">Smoker Profil</h2>
-        <p class="text-muted mb-0">Compare your life expectancy</p>
-      </div>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        <%# Card 1 : Marlboro Red %>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <%= image_tag "marlboro-red.jpg",
-                class: "card-img-top",
-                style: "height: 200px; width: 100%; object-fit: cover;",
-                alt: "Marlboro Red" %>
-            <div class="card-body">
-              <h5 class="card-title">Marlboro Red</h5>
-              <p class="card-text">At 35, with a smoking habit of 15 cigarettes a day for the past 10 years, your life expectancy is 30 years.
-                You've already completed half your journey!!</p>
-              <a href="#" class="btn btn-primary">Open</a>
+
+  <% if user_signed_in? %>
+    <%# Section Smoker Profiles (3 cartes par ligne) %>
+    <section class="card shadow-sm">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <h2 class="h3 fw-bold">Smoker Profil</h2>
+          <p class="text-muted mb-0">Compare your life expectancy</p>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <%# Card 1 : Marlboro Red %>
+          <div class="col">
+            <div class="card" style="width: 18rem;">
+              <%= image_tag "marlboro-red.jpg",
+                  class: "card-img-top",
+                  style: "height: 200px; width: 100%; object-fit: cover;",
+                  alt: "Marlboro Red" %>
+              <div class="card-body">
+                <h5 class="card-title">Marlboro Red</h5>
+                <p class="card-text">At 35, with a smoking habit of 15 cigarettes a day for the past 10 years, your life expectancy is 30 years.
+                  You've already completed half your journey!!</p>
+                <a href="#" class="btn btn-primary">Open</a>
+              </div>
+            </div>
+          </div>
+          <%# Card 2 : e-cigarette %>
+          <div class="col">
+            <div class="card" style="width: 18rem;">
+              <%= image_tag "ecigarette.jpg",
+              class: "card-img-top",
+              style: "height: 200px; width: 100%; object-fit: cover;",
+                  alt: "e-cigarette" %>
+              <div class="card-body">
+                <h5 class="card-title">e-cigarette</h5>
+                <p class="card-text">At 35 years old, with a consumption of 150 puffs per day for the past 10 years, your life expectancy is 50 years.
+                  If you want to go further, cut down!</p>
+                <a href="#" class="btn btn-primary">Open</a>
+              </div>
             </div>
           </div>
         </div>
-        <%# Card 2 : e-cigarette %>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <%= image_tag "ecigarette.jpg", 
-            class: "card-img-top",
-            style: "height: 200px; width: 100%; object-fit: cover;",
-                alt: "e-cigarette" %>
-            <div class="card-body">
-              <h5 class="card-title">e-cigarette</h5>
-              <p class="card-text">At 35 years old, with a consumption of 150 puffs per day for the past 10 years, your life expectancy is 50 years.
-                If you want to go further, cut down!</p>
-              <a href="#" class="btn btn-primary">Open</a>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  <% end %>
 </div>
