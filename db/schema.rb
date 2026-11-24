@@ -55,6 +55,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_130640) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "content"
+    t.string "image"
     t.index ["user_id"], name: "index_smoker_profiles_on_user_id"
   end
 
