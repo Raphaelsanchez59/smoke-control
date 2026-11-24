@@ -3,19 +3,37 @@
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 fw-bold mb-0">Profile of <%= @user.nickname.presence || @user.email %></h1>
-            <%= link_to "Edit profile", edit_user_registration_path, class: "btn btn-outline-dark btn-sm" %>
+          <div class="d-flex justify-content-between align-items-center gap-2 border-bottom pb-3 mb-4">
+            <h1 class="h3 fw-bold mb-0 text-break">Profile of <%= @user.nickname.presence || @user.email %></h1>
+            <%= link_to "Edit profile", edit_user_registration_path, class: "btn btn-outline-dark btn-sm flex-shrink-0" %>
           </div>
           <dl class="row mb-0">
             <dt class="col-sm-5 text-muted">Nickname</dt>
-            <dd class="col-sm-7"><%= @user.nickname.presence || "Not provided" %></dd>
+            <dd class="col-sm-7">
+              <% if @user.nickname.present? %>
+                <%= @user.nickname %>
+              <% else %>
+                <span class="fst-italic text-muted">Not provided</span>
+              <% end %>
+            </dd>
             <dt class="col-sm-5 text-muted">Email</dt>
-            <dd class="col-sm-7"><%= @user.email %></dd>
+            <dd class="col-sm-7 text-break"><%= @user.email %></dd>
             <dt class="col-sm-5 text-muted">Birth date</dt>
-            <dd class="col-sm-7"><%= @user.birth_date ? @user.birth_date.strftime("%B %d, %Y") : "Not provided" %></dd>
+            <dd class="col-sm-7">
+              <% if @user.birth_date.present? %>
+                <%= @user.birth_date.strftime("%B %d, %Y") %>
+              <% else %>
+                <span class="fst-italic text-muted">Not provided</span>
+              <% end %>
+            </dd>
             <dt class="col-sm-5 text-muted">Start smoking year</dt>
-            <dd class="col-sm-7 mb-0"><%= @user.start_smoking_year.presence || "Not provided" %></dd>
+            <dd class="col-sm-7 mb-0">
+              <% if @user.start_smoking_year.present? %>
+                <%= @user.start_smoking_year %>
+              <% else %>
+                <span class="fst-italic text-muted">Not provided</span>
+              <% end %>
+            </dd>
           </dl>
         </div>
       </div>
