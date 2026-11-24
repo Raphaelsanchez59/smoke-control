@@ -7,6 +7,7 @@ class ChatsController < ApplicationController
     @chat = Chat.new(title: "Mon bilan nicotine")
     @chat.user = current_user
     if @chat.save
+      @chat.start
       flash[:chat_access] = true
       session[:chat_id] = @chat.id
       redirect_to chat_path(@chat)
