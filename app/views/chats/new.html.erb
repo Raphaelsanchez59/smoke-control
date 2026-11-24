@@ -1,46 +1,62 @@
 <div class="container-fluid py-4 px-lg-4">
   <div class="row g-4 align-items-start">
-    <%# Colonne gauche (+ large) : Espace principal chatbot %>
+    <%# Colonne gauche : Chatbot avec première question + réponse ensuite %>
     <section class="col-lg-9">
       <div class="card shadow-sm">
-        <div class="card-header bg-white py-3">
-          <h2 class="h4 mb-0">Evaluons ta consommation avec le chatbot</h2>
+        <div class="card-header bg-white py-3 text-center">
+          <h2 class="h4 mb-0">Let's create your smoker profile</h2>
+          <% if @chat&.title.present? %>
+            <span class="badge text-bg-light border"><%= @chat.title %></span>
+          <% end %>
         </div>
 
-        <div class="card-body p-4">
-          <%= form_with model: @chat do |f| %>
-            <div class="row g-3 align-items-end">
-              <div class="col-lg-9">
-                <%= f.label :title, "Sujet de la discussion", class: "form-label" %>
-                <%= f.text_field :title, class: "form-control form-control-lg", placeholder: "Réponds ici ..." %>
+        <div class="card-body p-4 d-flex flex-column gap-3">
+          <%# affiche les messages %>
+          <div id="chat-messages" class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 360px; max-height: 500px; overflow-y: auto;">
+            <% if defined?(@messages) && @messages.present? %>
+              <% @messages.each do |message| %>
+                <% is_user = message.role == "user" %>
+                <div class="p-3 rounded shadow-sm <%= is_user ? 'bg-primary text-white align-self-end' : 'bg-white border align-self-start' %>" style="max-width: 80%;">
+                  <div class="fw-semibold small <%= is_user ? 'text-white-50' : 'text-primary' %> mb-1">
+                    <%= is_user ? "Me" : "Assistant" %>
+                  </div>
+                  <div class="small" style="white-space: pre-line;"><%= message.content %></div>
+                </div>
+              <% end %>
+            <% else %>
+              <%# Première question posée par l'IA / assistant %>
+              <div class="p-3 rounded bg-white border shadow-sm align-self-start" style="max-width: 80%;">
+                <div class="fw-semibold small text-primary mb-1">Assistant</div>
+                <div class="small">
+                  Hello ! Ecig or cig ? How many by day ?
+                </div>
               </div>
-
-              <div class="col-lg-3">
-                <%= f.submit "Lancer le chat", class: "btn btn-primary btn-lg w-100 text-nowrap" %>
-              </div>
-            </div>
-          <% end %>
-
-          <hr class="my-4">
-
-          <%# Grande zone de discussion statique pour la mise en page %>
-          <div class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 320px; max-height: 450px; overflow-y: auto;">
-            <div class="p-3 rounded bg-white border shadow-sm align-self-start" style="max-width: 80%;">
-              <div class="fw-semibold small text-primary mb-1">Assistant</div>
-              <div class="small">Bonjour ! Dis-moi comment tu consommes aujourd'hui pour qu'on fasse évoluer ton profil fumeur.</div>
-            </div>
-
-            <div class="p-3 rounded bg-primary text-white shadow-sm align-self-end" style="max-width: 80%;">
-              <div class="fw-semibold small mb-1">Moi</div>
-              <div class="small">Je tourne autour de 150 puffs par jour et j'aimerais commencer à réduire.</div>
-            </div>
+            <% end %>
           </div>
+
+          <%# Formulaire de réponse directe dans le chat %>
+          <% if @chat&.persisted? && defined?(@message) && @message.present? %>
+            <%= form_with model: [@chat, @message] do |f| %>
+              <div class="input-group input-group-lg">
+                <%= f.text_field :content, class: "form-control", placeholder: "Écris ta réponse ici...", autocomplete: "off", required: true %>
+                <%= f.submit "Envoyer", class: "btn btn-primary px-4 text-nowrap" %>
+              </div>
+            <% end %>
+          <% else %>
+            <%# Si on est encore sur la création du chat %>
+            <%= form_with model: @chat do |f| %>
+              <div class="input-group input-group-lg">
+                <%= f.text_field :title, class: "form-control", placeholder: "Answer the first question...", autocomplete: "off", required: true %>
+                <%= f.submit "Envoyer", class: "btn btn-primary px-4 text-nowrap" %>
+              </div>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </section>
 
-    <%# Colonne droite (- large) : Carte profil fumeur compacte %>
-    <aside class="col-lg-3">
+    <%# Colonne droite : Carte profil fumeur évolutive%>
+    <aside class="col-lg-3 text-center">
       <div class="mb-3">
         <h1 class="h5 mb-1">Smoker Profil</h1>
         <p class="text-muted small mb-0">Compare your life expectancy</p>
@@ -55,13 +71,13 @@
           <h2 class="h6 fw-bold mb-2">e-cigarette</h2>
           <p class="small text-secondary mb-3">
             At 35 years old, with a consumption of 150 puffs per day for the past 10 years,
-            your life expectancy is 50 years. If you want to go further, cut down!
+            your life expectancy is 50 years. If you want to have more time, just stop!
           </p>
 
           <div class="d-flex flex-wrap gap-1">
-            <span class="badge text-bg-light border">35 ans</span>
-            <span class="badge text-bg-light border">150 puffs/j</span>
-            <span class="badge text-bg-light border">Espérance : 50 ans</span>
+            <span class="badge text-bg-light border">35 years</span>
+            <span class="badge text-bg-light border">150 puffs/day</span>
+            <span class="badge text-bg-light border">Years to live : 50</span>
           </div>
         </div>
       </div>
