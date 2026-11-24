@@ -1,12 +1,24 @@
-<h1>Profile of <%= @user.nickname.presence || @user.email %></h1>
-<dl>
-  <dt>Nickname</dt>
-  <dd><%= @user.nickname.presence || "Not provided" %></dd>
-  <dt>Email</dt>
-  <dd><%= @user.email %></dd>
-  <dt>Birth date</dt>
-  <dd><%= @user.birth_date ? @user.birth_date.strftime("%B %d, %Y") : "Not provided" %></dd>
-  <dt>Start smoking year</dt>
-  <dd><%= @user.start_smoking_year.presence || "Not provided" %></dd>
-</dl>
-<%= link_to "Edit profile", edit_user_registration_path %>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 fw-bold mb-0">Profile of <%= @user.nickname.presence || @user.email %></h1>
+            <%= link_to "Edit profile", edit_user_registration_path, class: "btn btn-outline-dark btn-sm" %>
+          </div>
+          <dl class="row mb-0">
+            <dt class="col-sm-5 text-muted">Nickname</dt>
+            <dd class="col-sm-7"><%= @user.nickname.presence || "Not provided" %></dd>
+            <dt class="col-sm-5 text-muted">Email</dt>
+            <dd class="col-sm-7"><%= @user.email %></dd>
+            <dt class="col-sm-5 text-muted">Birth date</dt>
+            <dd class="col-sm-7"><%= @user.birth_date ? @user.birth_date.strftime("%B %d, %Y") : "Not provided" %></dd>
+            <dt class="col-sm-5 text-muted">Start smoking year</dt>
+            <dd class="col-sm-7 mb-0"><%= @user.start_smoking_year.presence || "Not provided" %></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

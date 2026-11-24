@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Smoke" %></title>
+    <title><%= content_for(:title) || "Smoke Control" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Smoke">
@@ -21,7 +21,7 @@
   <body>
     <%= link_to "Skip to main content", "#main-content", class: "visually-hidden-focusable" %>
     <header>
-      <%= render "shared/navbar" %> <!-- 👈 Add this for navbar -->
+      <%= render "shared/navbar" %>
     </header>
     <main id="main-content">
       <%= render "shared/flashes" %>
