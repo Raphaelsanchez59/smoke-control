@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_131801) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_160821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_131801) do
     t.datetime "updated_at", null: false
     t.text "content"
     t.string "image"
+    t.integer "years_to_live"
     t.index ["user_id"], name: "index_smoker_profiles_on_user_id"
   end
 
