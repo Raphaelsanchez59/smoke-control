@@ -1,8 +1,12 @@
-<div>
-  <div>
-    <h2><%= @smokerprofile.name %></h2>
-    <img src="#{@smokerprofile.image}">
+<div class="container">
+  <div class="row">
+    <h2>@smokerprofile.name</h2>
+    <div class="col-4">
+      <%= image_tag @smokerprofile.image %>
+    </div>
+    <div class="col-8">
+      <h3><%= @smokerprofile.cigarette_type %></h3>
+      <p><%= @smokerprofile.content %></p>
+    </div>
   </div>
-  <p><%= @smokerprofile.cigarette_type %></p>
-  <p><%= @smokerprofile.content %></p>
 </div>
