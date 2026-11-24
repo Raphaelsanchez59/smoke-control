@@ -1,6 +1,7 @@
 class ChatsController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[new create show]
   def new
+    @chat = Chat.new
   end
 
   def create
