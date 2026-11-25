@@ -7,8 +7,10 @@ class ChatsController < ApplicationController
   def create
     @chat = Chat.new(title: "My smoking profile")
     @chat.user = current_user
+    @chat.step = params[:from_step] if Chat::STEPS.key?(params[:from_step])
     if @chat.save
       @chat.start
+      @chat.answer(params[:answer]) if params[:answer].present?
       flash[:chat_access] = true
       session[:chat_id] = @chat.id
       redirect_to chat_path(@chat)
