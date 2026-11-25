@@ -23,7 +23,8 @@
                   <% if is_user %>
                     <div class="small" style="white-space: pre-line;"><%= message.content %></div>
                   <% else %>
-                    <div class="small"><%= render_markdown(message.content) %></div>
+                    <%# Markdown de l'IA converti en HTML, sanitize bloque tout code dangereux %>
+                    <div class="small"><%= sanitize(Kramdown::Document.new(message.content.to_s, input: "GFM").to_html) %></div>
                   <% end %>
                 </div>
               <% end %>
