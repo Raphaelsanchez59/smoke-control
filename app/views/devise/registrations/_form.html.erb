@@ -15,12 +15,14 @@
   <% end %>
   <%= f.input :birth_date,
             as: :date,
-            start_year: Date.current.year - 81,
-            end_year: Date.current.year - 10, 
+            start_year: Date.current.year - 120,
+            end_year: Date.current.year - 18,
             default: Date.new(2005, 1, 1) %>
   <%= f.input :start_smoking_year,
-              as: :integer,
-              input_html: { min: 1900, max: Date.current.year, class: "form-control" } %>
+            as: :select,
+            collection: (Date.current.year - 120..Date.current.year).to_a.reverse,
+            prompt: "Select year",
+            input_html: { class: "form-select" } %>
   <%= f.input :password,
               required: f.object.new_record?,
               hint: (f.object.new_record? ? ("#{@minimum_password_length} characters minimum" if @minimum_password_length) : "leave it blank if you don't want to change it"),
