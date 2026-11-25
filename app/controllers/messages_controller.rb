@@ -6,7 +6,10 @@ class MessagesController < ApplicationController
     return redirect_to new_chat_path unless can_answer?
 
     content = message_params[:content]
-    @chat.answer(content) if !@chat.finished? && content.present?
+    if !@chat.finished? && content.present?
+      @chat.answer(content)
+      @chat.generate_report if @chat.step == "done"
+    end
 
     flash[:chat_access] = true
     redirect_to chat_path(@chat)
