@@ -11,7 +11,6 @@ class ChatsController < ApplicationController
     if @chat.save
       @chat.start
       @chat.answer(params[:answer]) if params[:answer].present?
-      flash[:chat_access] = true
       session[:chat_id] = @chat.id
       redirect_to chat_path(@chat)
     else
@@ -39,7 +38,7 @@ class ChatsController < ApplicationController
     if user_signed_in?
       @chat.user == current_user
     else
-      flash[:chat_access] && session[:chat_id] == @chat.id
+      @chat.user_id.nil? && session[:chat_id] == @chat.id
     end
   end
 end
