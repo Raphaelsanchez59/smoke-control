@@ -25,48 +25,5 @@
       </div>
     </div>
   </section>
-
-  <% if user_signed_in? %>
-    <%# Section Smoker Profiles (3 cartes par ligne) %>
-    <section class="card shadow-sm">
-      <div class="card-body p-4">
-        <div class="text-center mb-4">
-          <h2 class="h3 fw-bold">Smoker Profil</h2>
-          <p class="text-muted mb-0">Compare your life expectancy</p>
-        </div>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-          <%# Card 1 : Marlboro Red %>
-          <div class="col">
-            <div class="card" style="width: 18rem;">
-              <%= image_tag "marlboro-red.jpg",
-                  class: "card-img-top",
-                  style: "height: 200px; width: 100%; object-fit: cover;",
-                  alt: "Marlboro Red" %>
-              <div class="card-body">
-                <h5 class="card-title">Marlboro Red</h5>
-                <p class="card-text">At 35, with a smoking habit of 15 cigarettes a day for the past 10 years, your life expectancy is 30 years.
-                  You've already completed half your journey!!</p>
-                <a href="#" class="btn btn-primary">Open</a>
-              </div>
-            </div>
-          </div>
-          <%# Card 2 : e-cigarette %>
-          <div class="col">
-            <div class="card" style="width: 18rem;">
-              <%= image_tag "ecigarette.jpg",
-                  class: "card-img-top",
-                  style: "height: 200px; width: 100%; object-fit: cover;",
-                  alt: "e-cigarette" %>
-              <div class="card-body">
-                <h5 class="card-title">e-cigarette</h5>
-                <p class="card-text">At 35 years old, with a consumption of 150 puffs per day for the past 10 years, your life expectancy is 50 years.
-                  If you want to go further, cut down!</p>
-                <a href="#" class="btn btn-primary">Open</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  <% end %>
+  <%= render "smoker_profiles/index"%>
 </div>
