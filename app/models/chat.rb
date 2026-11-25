@@ -13,11 +13,11 @@ class Chat < ApplicationRecord
       choices: { "Yes" => "birth", "No" => "never" }
     },
     "birth" => {
-      question: "When were you born ?",
+      question: "When were you born ? (MM/YYYY)",
       next: "start"
     },
     "start" => {
-      question: "When did you start smoking ? (approximately)",
+      question: "When did you start smoking ? (approximately - MM/YYYY))",
       next: "product"
     },
     "product" => {
@@ -30,7 +30,7 @@ class Chat < ApplicationRecord
     },
     # --- Cigarettes seules ---
     "cig_brand" => {
-      question: "Which brand do you smoke ?",
+      question: "Which cigarets brand do you smoke ?",
       next: "cig_per_day"
     },
     "cig_per_day" => {
@@ -39,7 +39,7 @@ class Chat < ApplicationRecord
     },
     # --- Les deux : cigarettes, puis cigarette électronique ---
     "both_cig_brand" => {
-      question: "Which brand do you smoke ?",
+      question: "Which cigarets brand do you smoke ?",
       next: "both_cig_per_day"
     },
     "both_cig_per_day" => {

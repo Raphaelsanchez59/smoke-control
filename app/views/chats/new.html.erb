@@ -12,7 +12,7 @@
 
         <div class="card-body p-4 d-flex flex-column gap-3">
           <%# affiche les messages %>
-          <div id="chat-messages" class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 360px; max-height: 500px; overflow-y: auto;">
+          <div id="chat-messages" data-controller="scroll-bottom" class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 360px; max-height: 500px; overflow-y: auto;">
             <% if defined?(@messages) && @messages.present? %>
               <% @messages.each do |message| %>
                 <% is_user = message.role == "user" %>
@@ -20,7 +20,11 @@
                   <div class="fw-semibold small <%= is_user ? 'text-white-50' : 'text-primary' %> mb-1">
                     <%= is_user ? "Me" : "Assistant" %>
                   </div>
-                  <div class="small" style="white-space: pre-line;"><%= message.content %></div>
+                  <% if is_user %>
+                    <div class="small" style="white-space: pre-line;"><%= message.content %></div>
+                  <% else %>
+                    <div class="small"><%= render_markdown(message.content) %></div>
+                  <% end %>
                 </div>
               <% end %>
             <% else %>
@@ -36,12 +40,7 @@
 
           <%# Formulaire de réponse directe dans le chat %>
           <% if @chat&.persisted? && defined?(@message) && @message.present? %>
-            <%= form_with model: [@chat, @message] do |f| %>
-              <div class="input-group input-group-lg">
-                <%= f.text_field :content, class: "form-control", placeholder: "Écris ta réponse ici...", autocomplete: "off", required: true %>
-                <%= f.submit "Envoyer", class: "btn btn-primary px-4 text-nowrap" %>
-              </div>
-            <% end %>
+            <%= render "chats/answer_form", chat: @chat, message: @message %>
           <% else %>
             <%# Si on est encore sur la création du chat %>
             <%= form_with model: @chat do |f| %>

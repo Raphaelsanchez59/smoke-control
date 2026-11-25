@@ -21,8 +21,11 @@ class ChatsController < ApplicationController
 
   def show
     @chat = Chat.find(params[:id])
-    @message = Message.new
     return redirect_to new_chat_path unless access_allowed?
+
+    @messages = @chat.messages.order(:created_at)
+    @message = Message.new
+    render :new
   end
 
   def home_question # renvoi les question de la page d'accueil dans le chat
