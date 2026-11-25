@@ -4,27 +4,23 @@
     <h1 class="display-4 fw-bold">Smoke Control</h1>
     <p class="lead text-muted">How much time do you have left to live?</p>
   </section>
+
   <%# Card Chatbot centrée %>
   <section class="row justify-content-center mb-5">
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body p-4 text-center">
-          <% unless user_signed_in? %>
-            <p class="h5 fw-semibold mb-4">Are you a smoker?</p>
+          <% if user_signed_in? %>
+            <p class="h5 fw-semibold mb-4">Would you like another profile?</p>
+            <div class="d-flex justify-content-center gap-3">
+              <%= button_to "Yes", chats_path, class: "btn btn-dark px-4" %>
+              <button type="button" class="btn btn-outline-secondary px-4" onclick="alert('Ok')">
+                No
+              </button>
+            </div>
           <% else %>
-            <p class="h5 fw-semibold mb-4">Would u want another profile?</p>
+            <%= render "chats/home_question", step: "smoker" %>
           <% end %>
-          <div class="d-flex justify-content-center gap-3">
-            <%= link_to "Yes", new_chat_path, class: "btn btn-dark px-4" %>
-            <button type="button"
-            class="btn btn-outline-secondary px-4"
-            onclick="alert('<%= user_signed_in? ? "Ok" : "Super, continue comme ça !" %>')">
-              No
-            </button>
-          </div>
-          <div id="no-smoke-msg" class="alert alert-success mt-4 mb-0 d-none">
-            Super continu comme ca
-          </div>
         </div>
       </div>
     </div>
