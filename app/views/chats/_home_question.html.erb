@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "home_question" do %>
+  <% current = Chat::STEPS[step] %>
+
+  <% if current[:choices] %>
+    <%# Une question avec ses boutons %>
+    <p class="h5 fw-semibold mb-4"><%= current[:question] %></p>
+    <div class="d-flex justify-content-center gap-3">
+      <% current[:choices].each do |label, next_step| %>
+        <% if %w[ex_smoker never].include?(next_step) %>
+          <%# No : on reste sur l'accueil, seule la boîte change %>
+          <%= link_to label, home_question_chats_path(step: next_step),
+                class: "btn btn-outline-secondary px-4" %>
+        <% else %>
+          <%# Yes : on crée le chat et on quitte l'accueil %>
+          <%= button_to label, chats_path,
+                params: { from_step: step, answer: label },
+                class: "btn btn-dark px-4",
+                form: { data: { turbo_frame: "_top" } } %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <%# Pas de boutons : le message de fin (never) %>
+    <div class="alert alert-success mb-0"><%= current[:question] %></div>
+  <% end %>
+<% end %>

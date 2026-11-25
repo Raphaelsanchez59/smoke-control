@@ -4,28 +4,18 @@
     <h1 class="display-4 fw-bold">Smoke Control</h1>
     <p class="lead text-muted">How much time do you have left to live?</p>
   </section>
-  <%# Card Chatbot centrée %>
+
   <%# Card Chatbot centrée %>
   <section class="row justify-content-center mb-5">
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body p-4 text-center">
-          <p class="h5 fw-semibold mb-4">Are you a smoker?</p>
-          <div class="d-flex justify-content-center gap-3">
-            <%= link_to "Yes", new_chat_path, class: "btn btn-dark px-4" %>
-            <button type="button"
-        class="btn btn-outline-secondary px-4"
-        onclick="alert('Super continu comme ca')">
-              No
-            </button>
-          </div>
-          <div id="no-smoke-msg" class="alert alert-success mt-4 mb-0 d-none">
-            Super continu comme ca
-          </div>
+          <%= render "chats/home_question", step: "smoker" %>
         </div>
       </div>
     </div>
   </section>
+
   <%# Section Smoker Profiles (3 cartes par ligne) %>
   <section class="card shadow-sm">
     <div class="card-body p-4">
@@ -52,9 +42,9 @@
         <%# Card 2 : e-cigarette %>
         <div class="col">
           <div class="card" style="width: 18rem;">
-            <%= image_tag "ecigarette.jpg", 
-            class: "card-img-top",
-            style: "height: 200px; width: 100%; object-fit: cover;",
+            <%= image_tag "ecigarette.jpg",
+                class: "card-img-top",
+                style: "height: 200px; width: 100%; object-fit: cover;",
                 alt: "e-cigarette" %>
             <div class="card-body">
               <h5 class="card-title">e-cigarette</h5>

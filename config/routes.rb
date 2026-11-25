@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   resources :smokerprofiles, only: [:show, :destroy]
   resources :chats, only: %i[new create show] do
+    collection do
+      get :home_question #renvoi les questions du home
+    end
     resources :messages, only: %i[create]
   end
   # Definesresources :messages, only: %i[create] the root path route ("/")
