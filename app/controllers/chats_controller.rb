@@ -33,6 +33,12 @@ class ChatsController < ApplicationController
     render partial: "chats/home_question", locals: { step: step }
   end
 
+  def generate_profile
+    @chat = current_user.chats.find(params[:id])
+    profile = @chat.create_smoker_profile
+    redirect_to smoker_profile_path(profile), notice: "Your smoker profile has been created!"
+  end
+
   private
 
   def access_allowed?

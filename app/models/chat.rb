@@ -17,7 +17,7 @@ class Chat < ApplicationRecord
       next: "start"
     },
     "start" => {
-      question: "When did you start smoking ? (approximately - MM/YYYY))",
+      question: "When did you start smoking ? (approximately - MM/YYYY)",
       next: "product"
     },
     "product" => {
@@ -53,8 +53,9 @@ class Chat < ApplicationRecord
     },
     # Puff jetable
     "puff_nicotine" => {
-      question: "What nicotine level ?",
-      choices: { "0 mg/ml" => "puff_count", "10 mg/ml" => "puff_count", "20 mg/ml" => "puff_count" }
+      question: "What nicotine level ? (pick one or type it, in mg/ml)",
+      choices: { "0 mg/ml" => "puff_count", "10 mg/ml" => "puff_count", "20 mg/ml" => "puff_count" },
+      next: "puff_count"
     },
     "puff_count" => {
       question: "How many puffs is your disposable vape advertised to have ?",
@@ -70,9 +71,10 @@ class Chat < ApplicationRecord
     },
     # Rechargeable
     "refill_nicotine" => {
-      question: "What is the nicotine level in your e-liquid ?",
+      question: "What is the nicotine level in your e-liquid ? (pick one or type it, in mg/ml)",
       choices: { "3 mg/ml" => "refill_ml", "6 mg/ml" => "refill_ml", "12 mg/ml" => "refill_ml",
-                 "20 mg/ml" => "refill_ml" }
+                 "20 mg/ml" => "refill_ml" },
+      next: "refill_ml"
     },
     "refill_ml" => {
       question: "How many ml of e-liquid do you use per week ?",
@@ -131,35 +133,106 @@ class Chat < ApplicationRecord
     - If the user wants to quit, encourage them and mention that
       Tabac Info Service (39 89, free, in France) can help.
   PROMPT
-  # L'étape en cours (question + choix ou next)
+
+  PROFILE_PROMPT = <<~PROMPT
+    From the questionnaire and the report below, return ONLY a JSON object, with no text around it, with these keys:
+    "name": a short profile name (e.g. "Marlboro Red - 15/day"),
+    "cigarette_type": "cigarette", "e_cigarette" or "both",
+    "years_to_live": integer, estimated remaining life expectancy in years,
+    "content": a 2-sentence summary of the report,
+    "cigarettes_per_day": integer or null,
+    "cigarette_nicotine_mg": number or null (nicotine per cigarette),
+    "puffs_per_day": integer or null,
+    "ecig_nicotine_mg": number or null (mg/ml)
+  PROMPT
+
   def current_step
     STEPS[step]
   end
 
-  # Le coach pose la question de l'étape en cours
   def start
     messages.create!(role: "assistant", content: current_step[:question])
   end
 
-  # Enregistre la réponse, passe à l'étape suivante, pose la question suivante
   def answer(text)
     messages.create!(role: "user", content: text)
-    next_step = current_step[:choices] ? current_step[:choices][text] : current_step[:next]
+    next_step = current_step[:choices]&.[](text) || current_step[:next]
     update!(step: next_step)
     messages.create!(role: "assistant", content: current_step[:question])
   end
 
-  # Plus de question après : fin de conversation
   def finished?
     current_step[:choices].nil? && current_step[:next].nil?
   end
 
+  def done_index
+    messages.order(:created_at).to_a.index do |m|
+      m.role == "assistant" && m.content == STEPS["done"][:question]
+    end
+  end
+
+  def questionnaire_messages
+    messages.order(:created_at).to_a[0..done_index]
+  end
+
+  def conversation_messages
+    messages.order(:created_at).to_a[(done_index + 1)..]
+  end
+
   def answers_for_ai
-    messages.order(:created_at).map { |m| "#{m.role == 'user' ? 'Answer' : 'Question'}: #{m.content}" }.join("\n")
+    questionnaire_messages.map { |m| "#{m.role == 'user' ? 'Answer' : 'Question'}: #{m.content}" }.join("\n")
   end
 
   def generate_report
     response = RubyLLM.chat.with_instructions(SYSTEM_PROMPT).ask(answers_for_ai)
     messages.create!(role: "assistant", content: response.content)
+  end
+
+  def reply(text)
+    messages.create!(role: "user", content: text)
+
+    llm = RubyLLM.chat.with_instructions(SYSTEM_PROMPT)
+    llm.add_message(role: :user, content: answers_for_ai)
+    conversation_messages[0..-2].each do |m|
+      llm.add_message(role: m.role.to_sym, content: m.content)
+    end
+
+    response = llm.ask(text)
+    messages.create!(role: "assistant", content: response.content)
+  end
+
+  MAX_AI_MESSAGES = 20
+
+  def ai_messages_count
+    return 0 unless done_index
+
+    conversation_messages.count { |m| m.role == "assistant" }
+  end
+
+  def can_chat?
+    step == "done" && ai_messages_count < MAX_AI_MESSAGES
+  end
+
+  def create_smoker_profile
+    report = conversation_messages.first&.content
+    response = RubyLLM.chat.with_instructions(PROFILE_PROMPT).ask("#{answers_for_ai}\n\nReport:\n#{report}")
+    data = JSON.parse(response.content[/\{.*\}/m])
+
+    profile = SmokerProfile.create!(
+      user: user,
+      name: data["name"],
+      cigarette_type: data["cigarette_type"],
+      years_to_live: data["years_to_live"],
+      content: data["content"]
+    )
+    if data["cigarettes_per_day"]
+      Cigarette.create!(smoker_profile: profile, quantity_by_day: data["cigarettes_per_day"],
+                        nicotine_mg: data["cigarette_nicotine_mg"])
+    end
+    if data["puffs_per_day"]
+      ECigarette.create!(smoker_profile: profile, puff_by_day: data["puffs_per_day"],
+                         nicotine_mg: data["ecig_nicotine_mg"])
+    end
+    profile
   end
 end

@@ -1,6 +1,5 @@
-<% unless chat.finished? %>
+<% if !chat.finished? %>
   <% if chat.current_step[:choices] %>
-    <%# Étape à choix : un bouton par réponse possible %>
     <div class="d-flex flex-wrap justify-content-end gap-2">
       <% chat.current_step[:choices].each_key do |label| %>
         <%= button_to label, chat_messages_path(chat),
@@ -8,13 +7,34 @@
               class: "btn btn-outline-primary px-4" %>
       <% end %>
     </div>
+    <% if chat.current_step[:next] %>
+      <%= form_with model: [chat, message], class: "mt-2" do |f| %>
+        <div class="input-group">
+          <%= f.text_field :content, class: "form-control", placeholder: "Or type it (e.g. 9)", autocomplete: "off", required: true %>
+          <%= f.submit "Send", class: "btn btn-primary px-4 text-nowrap" %>
+        </div>
+      <% end %>
+    <% end %>
   <% else %>
-    <%# Étape libre : le champ texte %>
     <%= form_with model: [chat, message] do |f| %>
       <div class="input-group input-group-lg">
         <%= f.text_field :content, class: "form-control", placeholder: "Type your answer...", autocomplete: "off", required: true %>
         <%= f.submit "Send", class: "btn btn-primary px-4 text-nowrap" %>
       </div>
     <% end %>
+  <% end %>
+
+<% elsif chat.step == "done" %>
+  <%= render "chats/generate_profile", chat: chat %>
+
+  <% if chat.can_chat? && user_signed_in? %>
+    <%= form_with model: [chat, message] do |f| %>
+      <div class="input-group input-group-lg">
+        <%= f.text_field :content, class: "form-control", placeholder: "Ask your coach...", autocomplete: "off", required: true %>
+        <%= f.submit "Send", class: "btn btn-primary px-4 text-nowrap" %>
+      </div>
+    <% end %>
+  <% elsif user_signed_in? %>
+    <p class="text-muted text-center mb-0">You've reached the 20-message limit for this conversation.</p>
   <% end %>
 <% end %>
