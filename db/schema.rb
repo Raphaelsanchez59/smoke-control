@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_160821) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_25_112841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,19 +26,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_160821) do
   create_table "cigarettes", force: :cascade do |t|
     t.integer "quantity_by_day"
     t.float "nicotine_mg"
-    t.bigint "smokerprofile_id", null: false
+    t.bigint "smoker_profile_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["smokerprofile_id"], name: "index_cigarettes_on_smokerprofile_id"
+    t.index ["smoker_profile_id"], name: "index_cigarettes_on_smoker_profile_id"
   end
 
   create_table "e_cigarettes", force: :cascade do |t|
     t.integer "puff_by_day"
     t.float "nicotine_mg"
-    t.bigint "smokerprofile_id", null: false
+    t.bigint "smoker_profile_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["smokerprofile_id"], name: "index_e_cigarettes_on_smokerprofile_id"
+    t.index ["smoker_profile_id"], name: "index_e_cigarettes_on_smoker_profile_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -248,8 +248,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_160821) do
   end
 
   add_foreign_key "chats", "users"
-  add_foreign_key "cigarettes", "smoker_profiles", column: "smokerprofile_id"
-  add_foreign_key "e_cigarettes", "smoker_profiles", column: "smokerprofile_id"
+  add_foreign_key "cigarettes", "smoker_profiles"
+  add_foreign_key "e_cigarettes", "smoker_profiles"
   add_foreign_key "messages", "chats"
   add_foreign_key "smoker_profiles", "users"
   add_foreign_key "solid_queue_batch_executions", "solid_queue_batches", column: "batch_id", on_delete: :cascade
