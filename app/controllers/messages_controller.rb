@@ -6,9 +6,13 @@ class MessagesController < ApplicationController
     return redirect_to new_chat_path unless can_answer?
 
     content = message_params[:content]
-    if !@chat.finished? && content.present?
-      @chat.answer(content)
-      @chat.generate_report if @chat.step == "done"
+    if content.present?
+      if !@chat.finished?
+        @chat.answer(content)
+        @chat.generate_report if @chat.step == "done"
+      elsif @chat.can_chat? && user_signed_in?
+        @chat.reply(content)
+      end
     end
 
     flash[:chat_access] = true

@@ -16,6 +16,9 @@ Rails.application.routes.draw do
     collection do
       get :home_question #renvoi les questions du home
     end
+    member do
+      post :generate_profile
+    end
     resources :messages, only: %i[create]
   end
   # Definesresources :messages, only: %i[create] the root path route ("/")

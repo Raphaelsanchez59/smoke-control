@@ -13,4 +13,14 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: %i[nickname birth_date start_smoking_year])
     devise_parameter_sanitizer.permit(:account_update, keys: %i[nickname birth_date start_smoking_year])
   end
+
+  def after_sign_in_path_for(resource)
+    chat = Chat.find_by(id: session.delete(:chat_id), user_id: nil)
+    if chat
+      chat.update(user: resource)
+      chat_path(chat)
+    else
+      super
+    end
+  end
 end
