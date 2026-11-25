@@ -1,16 +1,40 @@
-<% fallback_image = @smoker_profile.cigarette_type == "e_cigarette" ? "ecigarette.jpg" : "marlboro-red.jpg" %>
-<h2><%= @smoker_profile.name %></h2>
-<div class="row">
-  <div class="col-4">
-    <%= image_tag(
-          @smoker_profile.image.presence || fallback_image,
-          class: "img-fluid rounded",
-          alt: @smoker_profile.name.presence || "Smoker profile"
-        ) %>
+<div class="container py-5">
+  <div class="card shadow-sm border-0 rounded-4 overflow-hidden mx-auto" style="max-width: 900px;">
+    <div class="row g-0 align-items-center">
+      <!-- Image à gauche -->
+      <div class="col-md-4 bg-light p-4 text-center">
+        <% if @smoker_profile.image.present? %>
+          <%= image_tag @smoker_profile.image,
+                        alt: @smoker_profile.name,
+                        class: "img-fluid rounded-3",
+                        style: "max-height: 260px; object-fit: contain;" %>
+        <% end %>
+      </div>
+
+      <!-- Profil en paragraphe à côté -->
+      <div class="col-md-8 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <h1 class="h3 mb-0"><%= @smoker_profile.name %></h1>
+          <% if @smoker_profile.cigarette_type.present? %>
+            <span class="badge text-bg-secondary"><%= @smoker_profile.cigarette_type %></span>
+          <% end %>
+        </div>
+
+        <p class="text-body-secondary lh-lg mb-3">
+          <%= @smoker_profile.content %>
+        </p>
+
+        <% if @smoker_profile.years_to_live.present? %>
+          <p class="mb-4">
+            <strong>Estimated years to live :</strong>
+            <span class="fw-bold text-primary"><%= @smoker_profile.years_to_live %></span>
+          </p>
+        <% end %>
+
+        <div class="d-flex flex-wrap gap-2">
+          <%= link_to "Back to home", root_path, class: "btn btn-outline-secondary" %>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-8">
-    <h3><%= @smoker_profile.cigarette_type %></h3>
-    <p><%= @smoker_profile.content %></p>
-  </div>
-</div>
 </div>
