@@ -1,5 +1,5 @@
 <%# app/views/chats/show.html.erb %>
-<div class="container py-4" data-controller="typing" data-action="submit->typing#show">
+<div class="container py-4 chat-page" data-controller="typing" data-action="submit->typing#show">
   <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
     <%= render @messages %>
   </div>

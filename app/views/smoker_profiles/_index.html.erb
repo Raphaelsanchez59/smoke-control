@@ -5,7 +5,7 @@
                 else
                   35
                 end %>
-  <section class="card border-0 shadow-sm rounded-4">
+  <section class="card border-0 shadow-sm rounded-4 bg-transparent">
     <div class="card-body p-4 p-lg-5">
       <div class="text-center mb-4">
         <h2 class="h2 fw-bold mb-1">Smoker Profiles</h2>
@@ -32,7 +32,7 @@
                                     "15 cig/day"
                                   end %>
             <div class="col">
-              <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+              <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
                 <div class="card-img position-relative">
                   <%= image_tag(
                     profile.image.presence || image_name,
@@ -54,18 +54,18 @@
                 </div>
                 <div class="card-body p-4 d-flex flex-column">
                   <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge rounded-pill bg-secondary-subtle text-dark border px-3 py-2 fw-semibold">
+                    <span class="badge rounded-pill bg-light border px-3 py-2 fw-semibold">
                       <%= user_age %> years
                     </span>
-                    <span class="badge rounded-pill bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2 fw-semibold">
+                    <span class="badge rounded-pill border border-primary text-primary px-3 py-2 fw-semibold">
                       <%= consumption_label %>
                     </span>
                   </div>
-                  <h3 class="h4 fw-bold text-dark border-bottom pb-2 mb-3">
+                  <h3 class="h4 fw-bold border-bottom pb-2 mb-3">
                     <%= profile.name.presence || "Unnamed Profile" %>
                   </h3>
                   <% if profile.years_to_live.present? %>
-                    <div class="bg-light rounded-3 p-3 text-center mb-4 border">
+                    <div class="bg-body rounded-3 p-3 text-center mb-4 border">
                       <div class="text-uppercase small fw-bold text-muted letter-spacing">
                         Years to live
                       </div>
@@ -85,13 +85,13 @@
       <% end_year = Date.current.year + profile.years_to_live.to_i %>
       <hr class="my-2">
       <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">End of life</div>
-      <div class="fw-bold text-dark mt-1">💀 <%= end_year %></div>
+      <div class="fw-bold mt-1">💀 <%= end_year %></div>
     </div>
   <% end %>
                 <div class="mt-auto d-grid">
                     <%= link_to "Open",
                       smoker_profile_path(profile),
-                      class: "btn btn-light border border-secondary-subtle text-dark fw-semibold py-3 rounded-3 fs-5" %>
+                      class: "btn btn-light border border-secondary-subtle fw-semibold py-3 rounded-3 fs-5" %>
                   </div>
                 </div>
               </div>
@@ -114,7 +114,7 @@
         </div>
       </div>
       <% else %>
-        <div class="border rounded-3 bg-light-subtle text-center py-5 px-4 my-2">
+        <div class="border rounded-3 bg-light text-center py-5 px-4 my-2">
           <div class="mx-auto" style="max-width: 26rem;">
             <h3 class="h6 fw-semibold mb-1">No smoker profile yet</h3>
             <p class="text-body-secondary small mb-0">
