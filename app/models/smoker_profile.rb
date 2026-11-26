@@ -33,4 +33,15 @@ class SmokerProfile < ApplicationRecord
   rescue JSON::ParserError, TypeError, RubyLLM::Error => e
     Rails.logger.error("[Smokey] analyse impossible : #{e.message}")
   end
+
+  def photo_asset
+    case cigarette_type.to_s.downcase
+    when "e_cigarette", "ecigarette", "e-cigarette", "vape"
+      "ecigarette.jpg"
+    when "both", "cigarette_and_e_cigarette"
+      "ecigarette-cigarette.jpg"
+    else
+      "cigarette.jpg"
+    end
+  end
 end

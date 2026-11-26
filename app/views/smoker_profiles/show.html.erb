@@ -3,13 +3,11 @@
     <div class="row g-0 align-items-center">
       <!-- Image à gauche -->
       <div class="col-md-4 bg-light p-4 text-center">
-        <% if @smoker_profile.image.present? %>
-          <%= image_tag @smoker_profile.image,
-                        alt: @smoker_profile.name,
-                        class: "img-fluid rounded-3",
-                        style: "max-height: 260px; object-fit: contain;" %>
-        <% end %>
-      </div>
+      <%= image_tag @smoker_profile.photo_asset,
+                    alt: @smoker_profile.name,
+                    class: "img-fluid rounded-3",
+                    style: "max-height: 260px; object-fit: contain;" %>
+    </div>
 
       <!-- Profil en paragraphe à côté -->
       <div class="col-md-8 p-4 p-md-5">
