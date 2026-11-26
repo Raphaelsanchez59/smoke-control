@@ -14,8 +14,11 @@
             <p class="h5 fw-semibold mb-4">Would you like another profile?</p>
             <div class="d-flex justify-content-center gap-3">
               <%= button_to "Yes", chats_path, class: "btn btn-dark px-4" %>
-              <button type="button" class="btn btn-outline-secondary px-4" onclick="alert('Ok')">
-                No
+              <button type="button"
+                class="btn btn-outline-secondary px-4"
+                data-controller="scroll-to"
+                data-action="click->scroll-to#toTarget">
+                  No
               </button>
             </div>
           <% else %>
