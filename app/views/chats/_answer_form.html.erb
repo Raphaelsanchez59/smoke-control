@@ -25,7 +25,6 @@
   <% end %>
 
 <% elsif chat.step == "done" %>
-  <%= render "chats/generate_profile", chat: chat %>
 
   <% if chat.can_chat? && user_signed_in? %>
     <%= form_with model: [chat, message] do |f| %>

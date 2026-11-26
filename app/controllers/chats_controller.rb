@@ -8,6 +8,7 @@ class ChatsController < ApplicationController
     @chat = Chat.new(title: "My smoking profile")
     @chat.user = current_user
     @chat.step = params[:from_step] if Chat::STEPS.key?(params[:from_step])
+    @chat.step = @chat.skip_known("birth") if user_signed_in? && params[:from_step].blank?
     if @chat.save
       @chat.start
       @chat.answer(params[:answer]) if params[:answer].present?
