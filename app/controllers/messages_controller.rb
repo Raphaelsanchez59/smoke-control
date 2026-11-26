@@ -6,8 +6,10 @@ class MessagesController < ApplicationController
     The user's smoker profile is already complete. Chat freely with them about it:
     their consumption, costs, health impact and how to cut down or quit.
     Base your answers on the profile below and never invent values.
-    If the user corrects profile information, call update_smoker_profile with the corrected value.
-    If the tool reports missing or rejected values, ask about them. Do not call the tool for ordinary questions.
+    Call update_smoker_profile on every turn with only profile information explicitly given in the latest user message.
+    If there is no profile information in the latest message, call it with no values.
+    When the user gives their age, pass it as age, not birth_year.
+    If the tool reports rejected values, explain why and ask for them again.
     Do not offer any medical advice. Answer in English, concisely (120 words maximum).
   PROMPT
 
@@ -20,12 +22,11 @@ class MessagesController < ApplicationController
       profile_data_before = @chat.profile_data.deep_dup
       @ruby_llm_chat = RubyLLM.chat
       build_conversation_history
+      @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat)).with_tool_options(choice: :required, calls: :one)
 
       if @chat.done?
-        @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
         response = @ruby_llm_chat.with_instructions(followup_instructions).ask(@message.content)
       else
-        @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
         response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content)
       end
       Message.create!(role: "assistant", content: response.content, chat: @chat)

@@ -1,6 +1,8 @@
 class UpdateSmokerProfileTool < RubyLLM::Tool
   description "Saves the smoker profile information given by the user. " \
-              "Call it whenever the user provides or corrects profile information; new values replace old ones. " \
+              "Call it on every user message with only profile facts explicitly stated in that message. " \
+              "It compares new values with saved values and replaces only values that changed. " \
+              "Omitting a value leaves its saved value unchanged. " \
               "If the result contains 'rejected' values, kindly explain why they seem wrong and ask for them again."
 
   parameter :nickname, description: "User's first name or nickname", required: false
@@ -70,16 +72,17 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
     new_values = profile_values.select { |_key, value| value.present? }
     errors = errors_for(new_values, current_data)
     new_values = new_values.except(*errors.keys)
-    updated_data = current_data.merge(new_values)
+    changed_values = new_values.select { |key, value| current_data[key] != value }
+    updated_data = current_data.merge(changed_values)
 
-    @chat.update!(profile_data: updated_data) if new_values.present?
+    @chat.update!(profile_data: updated_data) if changed_values.present?
 
     missing = @chat.missing_fields(updated_data)
     unless @chat.done?
       @chat.update!(step: missing.empty? ? "awaiting_login" : "smoker")
     end
 
-    { saved: new_values, rejected: errors, profile: updated_data, missing: missing, complete: missing.empty? }
+    { saved: changed_values, rejected: errors, profile: updated_data, missing: missing, complete: missing.empty? }
   end
 
   private
