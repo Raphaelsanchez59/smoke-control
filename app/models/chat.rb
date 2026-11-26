@@ -213,13 +213,14 @@ class Chat < ApplicationRecord
     step == "done" && ai_messages_count < MAX_AI_MESSAGES
   end
 
-  def create_smoker_profile
+  def create_smoker_profile(user: nil)
+    target_user = user || self.user
     report = conversation_messages.first&.content
-    response = RubyLLM.chat.with_instructions(PROFILE_PROMPT).ask("#{answers_for_ai}\n\nReport:\n#{report}")
+    response = RubyLLM.chat.with_instructions(PROFILE_PROMPT).ask("#{answers_for_ai}\n\nReport:\n\n#{report}")
     data = JSON.parse(response.content[/\{.*\}/m])
 
     profile = SmokerProfile.create!(
-      user: user,
+      user: target_user,
       name: data["name"],
       cigarette_type: data["cigarette_type"],
       years_to_live: data["years_to_live"],

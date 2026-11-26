@@ -51,17 +51,23 @@
                   <h3 class="h4 fw-bold text-dark border-bottom pb-2 mb-3">
                     <%= profile.name.presence || "Unnamed Profile" %>
                   </h3>
-                  <p class="card-text text-secondary mb-4">
-                    <%= profile.content.presence || "No summary generated yet." %>
-                  </p>
                   <% if profile.years_to_live.present? %>
                     <div class="bg-light rounded-3 p-3 text-center mb-4 border">
                       <div class="text-uppercase small fw-bold text-muted letter-spacing">
                         Years to live
                       </div>
-                      <div class="display-5 fw-bolder text-primary lh-1 mt-1">
-                        <%= profile.years_to_live %>
-                      </div>
+                        <% total = @smoker_profiles.size %><% pos = @smoker_profiles.index(profile).to_i %><% ratio = total > 1 ? 1.0 - (pos.to_f / (total - 1)) : 1.0 %>
+                        <% if ratio >= 0.66 %>
+                          <% red, green, blue = 22, 163, 74 %>
+                        <% elsif ratio >= 0.33 %>
+                          <% red, green, blue = 234, 88, 12 %>
+                        <% else %>
+                          <% red, green, blue = 220, 38, 38 %>
+                        <% end %>
+
+<div class="display-5 fw-bolder lh-1 mt-1" style="color: rgb(<%= red %>, <%= green %>, <%= blue %>);">
+  <%= profile.years_to_live %>
+</div>
                       <div class="small text-muted mt-1">years estimated</div>
                     </div>
                   <% end %>
