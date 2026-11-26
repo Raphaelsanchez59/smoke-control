@@ -1,17 +1,18 @@
 <template data-typing-target="template">
-  <div class="p-3 rounded bg-white border shadow-sm align-self-start" style="max-width: 80%;">
-    <div class="fw-semibold small text-primary mb-1">Assistant</div>
-    <% if chat.report_next? %>
-      <div class="small text-muted d-flex align-items-center gap-2">
-        <span class="spinner-border spinner-border-sm" role="status"></span>
-        Ok, I'm working on your profile…
-      </div>
-    <% else %>
-      <div class="d-flex gap-1" role="status">
-        <span class="spinner-grow spinner-grow-sm text-secondary"></span>
-        <span class="spinner-grow spinner-grow-sm text-secondary"></span>
-        <span class="spinner-grow spinner-grow-sm text-secondary"></span>
-      </div>
-    <% end %>
+  <div class="d-flex justify-content-start mb-5">
+    <div class="px-3 pb-0 pt-3">
+      <% if chat.report_next? %>
+        <div class="text-muted d-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+          Ok, I'm working on your profile…
+        </div>
+      <% else %>
+        <div class="d-flex gap-1" role="status">
+          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
+          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
+          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
+        </div>
+      <% end %>
+    </div>
   </div>
 </template>

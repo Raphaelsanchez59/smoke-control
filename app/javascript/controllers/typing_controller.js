@@ -6,6 +6,6 @@ export default class extends Controller {
 
   show() {
     this.messagesTarget.appendChild(this.templateTarget.content.cloneNode(true))
-    this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
+    this.messagesTarget.lastElementChild.scrollIntoView({ behavior: "smooth" })
   }
 }

@@ -1,4 +1,4 @@
-<p class="h5 fw-semibold mb-4"><%= greeting %></p>
+<%= simple_format(greeting, class: "h5 fw-semibold mb-4 text-start") %>
 <%= form_with scope: :message, url: chats_path, method: :post do |form| %>
   <div class="mb-3">
     <%= form.text_area :content, class: "form-control", rows: 3, required: true,
