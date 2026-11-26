@@ -42,7 +42,7 @@
                   ) %>
                     <%= link_to "&times;".html_safe,
                   "#deleteProfileModal",
-                  class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 text-dark fw-bold",
+                  class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 fw-bold",
                   style: "line-height: 1;",
                   data: {
                     bs_toggle: "modal",
@@ -100,14 +100,14 @@
         </div>
         <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content border-0 rounded-4 shadow p-3">
+          <div class="modal-content border rounded-4 shadow p-3">
             <p class="mb-3 fw-semibold">Delete this profile?</p>
             <div class="d-flex justify-content-end gap-2">
-              <button type="button" class="btn btn-light border border-secondary-subtle rounded-3" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn border text-body" data-bs-dismiss="modal">Cancel</button>
               <form id="deleteProfileForm" method="post">
                 <input type="hidden" name="_method" value="delete">
                 <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-                <button type="submit" class="btn btn-light border border-danger-subtle text-danger fw-semibold rounded-3">Delete</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
               </form>
             </div>
           </div>
