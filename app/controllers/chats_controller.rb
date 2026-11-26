@@ -24,7 +24,7 @@ class ChatsController < ApplicationController
     @profile = if @chat.awaiting_login?
                  @chat.save_data_profile!(current_user)
                elsif @chat.done?
-                 current_user.smoker_profiles.order(:created_at).last
+                   @chat.smoker_profile
                end
   end
 

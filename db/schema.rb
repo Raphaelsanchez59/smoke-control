@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_094028) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_163734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_094028) do
     t.text "content"
     t.string "image"
     t.integer "years_to_live"
+    t.bigint "chat_id"
+    t.index ["chat_id"], name: "index_smoker_profiles_on_chat_id", unique: true
     t.index ["user_id"], name: "index_smoker_profiles_on_user_id"
   end
 
@@ -252,6 +254,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_094028) do
   add_foreign_key "cigarettes", "smoker_profiles"
   add_foreign_key "e_cigarettes", "smoker_profiles"
   add_foreign_key "messages", "chats"
+  add_foreign_key "smoker_profiles", "chats"
   add_foreign_key "smoker_profiles", "users"
   add_foreign_key "solid_queue_batch_executions", "solid_queue_batches", column: "batch_id", on_delete: :cascade
   add_foreign_key "solid_queue_batch_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
