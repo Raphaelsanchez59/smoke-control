@@ -20,7 +20,7 @@
             <dt class="col-sm-5 text-muted">Birth date</dt>
             <dd class="col-sm-7">
               <% if @user.birth_date.present? %>
-                <%= @user.birth_date.strftime("%B %d, %Y") %>
+                <%= @user.birth_date.strftime("%B %Y") %>
               <% else %>
                 <span class="fst-italic text-muted">Not provided</span>
               <% end %>
