@@ -31,16 +31,20 @@
           </p>
         <% end %>
 
-        <div class="d-flex flex-wrap gap-2">
-          <%= link_to "Back to home", root_path, class: "btn btn-outline-secondary" %>
-          <% if (last_chat = current_user.chats.order(:created_at).last) %>
-            <%= link_to "Back to chat", chat_path(last_chat), class: "btn btn-primary" %>
-          <% end %>
-          <%= link_to "Delete",
-            smoker_profile_path(@smoker_profile),
-            class: "btn btn-light border border-secondary-subtle text-danger fw-semibold px-3 py-2 rounded-3",
-            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
-        </div>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+  <div class="d-flex flex-wrap gap-2">
+    <%= link_to "Delete",
+                smoker_profile_path(@smoker_profile),
+                class: "btn btn-light border border-secondary-subtle text-danger fw-semibold px-3 py-2 rounded-3",
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+    <% if (last_chat = current_user.chats.order(:created_at).last) %>
+      <%= link_to "Chat", chat_path(last_chat), class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
+    <% end %>
+  </div>
+
+  <%= link_to "Back to home", root_path, class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
+</div>
+</div>
       </div>
     </div>
   </div>
