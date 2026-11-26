@@ -21,16 +21,16 @@
             <% daily_cig = profile.cigarettes.first&.quantity_by_day %>
             <% daily_puffs = profile.e_cigarettes.first&.puff_by_day %>
             <% consumption_label = if daily_cig.present? && daily_puffs.present?
-                                     "#{daily_cig} cig/day · #{daily_puffs} puffs/day"
-                                   elsif daily_puffs.present?
-                                     "#{daily_puffs} puffs/day"
-                                   elsif daily_cig.present?
-                                     "#{daily_cig} cig/day"
-                                   elsif profile.cigarette_type == "e_cigarette"
-                                     "150 puffs/day"
-                                   else
-                                     "15 cig/day"
-                                   end %>
+                                    "#{daily_cig} cig/day · #{daily_puffs} puffs/day"
+                                  elsif daily_puffs.present?
+                                    "#{daily_puffs} puffs/day"
+                                  elsif daily_cig.present?
+                                    "#{daily_cig} cig/day"
+                                  elsif profile.cigarette_type == "e_cigarette"
+                                    "150 puffs/day"
+                                  else
+                                    "15 cig/day"
+                                  end %>
             <div class="col">
               <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
                 <div class="card-img position-relative">
@@ -40,11 +40,16 @@
                     style: "height: 200px; width: 100%; object-fit: cover;",
                     alt: profile.name.presence || "Smoker profile"
                   ) %>
-                  <%= link_to "&times;".html_safe,
-            smoker_profile_path(profile),
-            class: "position-absolute top-0 end-0 m-2 text-dark text-decoration-none fw-bold",
-            style: "font-size: 2rem; line-height: 1;",
-            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+                  <button type="button"
+                    class="btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 text-dark fw-bold"
+                    style="line-height: 1;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteProfileModal"
+                    data-delete-url="<%= smoker_profile_path(profile) %>"
+                    onclick="document.getElementById('deleteProfileForm').action = this.dataset.deleteUrl"
+                    aria-label="Delete profile">
+                      &times;
+                  </button>
                 </div>
                 <div class="card-body p-4 d-flex flex-column">
                   <div class="d-flex flex-wrap gap-2 mb-3">
@@ -82,7 +87,7 @@
       <div class="fw-bold text-dark mt-1">💀 <%= end_year %></div>
     </div>
   <% end %>
-                  <div class="mt-auto d-grid">
+                <div class="mt-auto d-grid">
                     <%= link_to "Open",
                       smoker_profile_path(profile),
                       class: "btn btn-light border border-secondary-subtle text-dark fw-semibold py-3 rounded-3 fs-5" %>
@@ -92,6 +97,21 @@
             </div>
           <% end %>
         </div>
+        <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 rounded-4 shadow p-3">
+            <p class="mb-3 fw-semibold">Delete this profile?</p>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-light border border-secondary-subtle rounded-3" data-bs-dismiss="modal">Cancel</button>
+              <form id="deleteProfileForm" method="post">
+                <input type="hidden" name="_method" value="delete">
+                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                <button type="submit" class="btn btn-light border border-danger-subtle text-danger fw-semibold rounded-3">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
       <% else %>
         <div class="border rounded-3 bg-light-subtle text-center py-5 px-4 my-2">
           <div class="mx-auto" style="max-width: 26rem;">
