@@ -35,7 +35,7 @@ class ChatsController < ApplicationController
 
   def generate_profile
     @chat = current_user.chats.find(params[:id])
-    profile = @chat.create_smoker_profile
+    profile = @chat.create_smoker_profile(user: current_user)
     redirect_to smoker_profile_path(profile), notice: "Your smoker profile has been created!"
   end
 
