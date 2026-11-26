@@ -40,16 +40,17 @@
                     style: "height: 200px; width: 100%; object-fit: cover;",
                     alt: profile.name.presence || "Smoker profile"
                   ) %>
-                  <button type="button"
-                    class="btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 text-dark fw-bold"
-                    style="line-height: 1;"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteProfileModal"
-                    data-delete-url="<%= smoker_profile_path(profile) %>"
-                    onclick="document.getElementById('deleteProfileForm').action = this.dataset.deleteUrl"
-                    aria-label="Delete profile">
-                      &times;
-                  </button>
+                    <%= link_to "&times;".html_safe,
+                  "#deleteProfileModal",
+                  class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 text-dark fw-bold",
+                  style: "line-height: 1;",
+                  data: {
+                    bs_toggle: "modal",
+                    bs_target: "#deleteProfileModal",
+                    delete_url: smoker_profile_path(profile)
+                  },
+                  onclick: "document.getElementById('deleteProfileForm').action = this.dataset.deleteUrl",
+                  "aria-label": "Delete profile" %>
                 </div>
                 <div class="card-body p-4 d-flex flex-column">
                   <div class="d-flex flex-wrap gap-2 mb-3">
