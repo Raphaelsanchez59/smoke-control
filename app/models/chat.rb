@@ -156,6 +156,14 @@ class Chat < ApplicationRecord
 
   def answer(text)
     messages.create!(role: "user", content: text)
+
+    error = answer_error(text)
+    if error
+      messages.create!(role: "assistant", content: error)
+      messages.create!(role: "assistant", content: current_step[:question])
+      return
+    end
+
     next_step = current_step[:choices]&.[](text) || current_step[:next]
     update!(step: skip_known(next_step))
     messages.create!(role: "assistant", content: current_step[:question])
@@ -171,16 +179,21 @@ class Chat < ApplicationRecord
 
   def answer_for(step_key)
     list = messages.order(:created_at).to_a
-    index = list.index { |m| m.role == "assistant" && m.content == STEPS[step_key][:question] }
+    questions = list.select { |m| m.role == "assistant" && m.content == STEPS[step_key][:question] }
+    index = list.index(questions.last)
     reply = index && list[index + 1]
     reply&.role == "user" ? reply.content : nil
   end
 
-  def answered_birth_date
-    month, year = answer_for("birth").to_s.scan(/\d+/).map(&:to_i)
+  def parse_month_year(text)
+    month, year = text.to_s.scan(/\d+/).map(&:to_i)
     Date.new(year, month, 1) if year && month&.between?(1, 12)
   rescue Date::Error
     nil
+  end
+
+  def answered_birth_date
+    parse_month_year(answer_for("birth"))
   end
 
   def answered_start_year
@@ -191,6 +204,40 @@ class Chat < ApplicationRecord
     step_key = STEPS["birth"][:next] if step_key == "birth" && user&.birth_date
     step_key = STEPS["start"][:next] if step_key == "start" && user&.start_smoking_year
     step_key
+  end
+
+  def answer_error(text)
+    number = text.to_s[/\d+([.,]\d+)?/]&.tr(",", ".")&.to_f
+
+    if current_step[:choices] && !current_step[:next] && !current_step[:choices].key?(text)
+      return "Please pick one of the options."
+    end
+
+    case step
+    when "birth"
+      date = parse_month_year(text)
+      return "Please use the format MM/YYYY (e.g. 07/2000)." unless date
+      return "You must be at least 18 to use Smoke Control." if date > 18.years.ago.to_date
+      return "That date seems too far in the past." if date < 120.years.ago.to_date
+    when "start"
+      date = parse_month_year(text)
+      return "Please use the format MM/YYYY (e.g. 03/2022)." unless date
+      return "That date is in the future." if date > Date.current
+
+      birth = user&.birth_date || answered_birth_date
+      return "You can't have started smoking before you were born!" if birth && date < birth
+    when "cig_per_day", "both_cig_per_day"
+      return "Please enter a number of cigarettes between 1 and 200." unless number&.between?(1, 200)
+    when "puff_nicotine", "refill_nicotine"
+      unless current_step[:choices].key?(text) || number&.between?(0, 50)
+        return "Please enter a nicotine level between 0 and 50 mg/ml."
+      end
+    when "puff_price", "refill_price"
+      return "Please enter a price between 0 and 200 €." unless number&.between?(0, 200)
+    when "puff_count", "puff_duration", "refill_ml"
+      return "Please enter a positive number." unless number&.positive?
+    end
+    nil
   end
 
   def done_index
