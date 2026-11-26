@@ -157,12 +157,40 @@ class Chat < ApplicationRecord
   def answer(text)
     messages.create!(role: "user", content: text)
     next_step = current_step[:choices]&.[](text) || current_step[:next]
-    update!(step: next_step)
+    update!(step: skip_known(next_step))
     messages.create!(role: "assistant", content: current_step[:question])
   end
 
   def finished?
     current_step[:choices].nil? && current_step[:next].nil?
+  end
+
+  def report_next?
+    current_step&.dig(:next) == "done"
+  end
+
+  def answer_for(step_key)
+    list = messages.order(:created_at).to_a
+    index = list.index { |m| m.role == "assistant" && m.content == STEPS[step_key][:question] }
+    reply = index && list[index + 1]
+    reply&.role == "user" ? reply.content : nil
+  end
+
+  def answered_birth_date
+    month, year = answer_for("birth").to_s.scan(/\d+/).map(&:to_i)
+    Date.new(year, month, 1) if year && month&.between?(1, 12)
+  rescue Date::Error
+    nil
+  end
+
+  def answered_start_year
+    answer_for("start").to_s[/\d{4}/]&.to_i
+  end
+
+  def skip_known(step_key)
+    step_key = STEPS["birth"][:next] if step_key == "birth" && user&.birth_date
+    step_key = STEPS["start"][:next] if step_key == "start" && user&.start_smoking_year
+    step_key
   end
 
   def done_index
@@ -180,7 +208,11 @@ class Chat < ApplicationRecord
   end
 
   def answers_for_ai
-    questionnaire_messages.map { |m| "#{m.role == 'user' ? 'Answer' : 'Question'}: #{m.content}" }.join("\n")
+    known = []
+    known << "Birth date: #{user.birth_date.strftime('%m/%Y')}" if user&.birth_date
+    known << "Started smoking in: #{user.start_smoking_year}" if user&.start_smoking_year
+    answers = questionnaire_messages.map { |m| "#{m.role == 'user' ? 'Answer' : 'Question'}: #{m.content}" }
+    (known + answers).join("\n")
   end
 
   def generate_report

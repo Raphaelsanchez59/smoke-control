@@ -15,6 +15,7 @@
   <% end %>
   <%= f.input :birth_date,
             as: :date,
+            discard_day: true,
             start_year: Date.current.year - 120,
             end_year: Date.current.year - 18,
             default: Date.new(2005, 1, 1) %>

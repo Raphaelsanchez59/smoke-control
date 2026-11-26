@@ -1,4 +1,4 @@
-<div class="text-center mb-3">
+<div>
   <% if user_signed_in? %>
     <%= button_to "Generate your smoker profile", generate_profile_chat_path(chat),
           class: "btn btn-success px-4" %>
@@ -7,24 +7,5 @@
             data-bs-toggle="modal" data-bs-target="#loginModal">
       Generate your smoker profile
     </button>
-
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Save your smoker profile</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Create an account or log in to generate your profile and keep chatting with your coach.
-            Your report will be kept.
-          </div>
-          <div class="modal-footer">
-            <%= link_to "Log in", new_user_session_path, class: "btn btn-outline-primary" %>
-            <%= link_to "Sign up", new_user_registration_path, class: "btn btn-primary" %>
-          </div>
-        </div>
-      </div>
-    </div>
   <% end %>
 </div>
