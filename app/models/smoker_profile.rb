@@ -1,6 +1,7 @@
 class SmokerProfile < ApplicationRecord
   CIGARETTE_TYPES = ["cigarette", "e_cigarette", "both"]
   belongs_to :user
+  belongs_to :chat, optional: true
   has_many :cigarettes, dependent: :destroy
   has_many :e_cigarettes, dependent: :destroy
 

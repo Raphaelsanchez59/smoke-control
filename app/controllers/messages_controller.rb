@@ -76,7 +76,7 @@ class MessagesController < ApplicationController
 
   def followup_instructions
     user = @chat.user
-    profile = user&.smoker_profiles&.order(:created_at)&.last
+    profile = @chat.smoker_profile
     cigarette = profile&.cigarettes&.order(:created_at)&.last
     e_cigarette = profile&.e_cigarettes&.order(:created_at)&.last
     details = {

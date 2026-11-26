@@ -1,6 +1,7 @@
 class Chat < ApplicationRecord
   belongs_to :user, optional: true
   has_many :messages, dependent: :destroy
+  has_one :smoker_profile, dependent: :nullify
 
   COLLECT_PROMPT = <<~PROMPT
     You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
@@ -15,7 +16,6 @@ class Chat < ApplicationRecord
     - if the profile is complete, state it in one sentence and summarize it.
 
     E-cigarettes:
-    - Always ask whether it is a disposable vape (puff) or a refillable e-cigarette.
     - Always ask the nicotine level of the e-liquid, in mg/ml.
     - Disposable vape: ask the advertised number of puffs and how many days one lasts,
       then compute puffs_per_day = advertised puffs ÷ days.
@@ -86,13 +86,13 @@ class Chat < ApplicationRecord
       start_smoking_year: profile_data["start_smoking_year"]
     )
 
-    profile = if done?
-                user.smoker_profiles.order(:created_at).last
-              else
-                user.smoker_profiles.build
-              end
-    profile ||= user.smoker_profiles.build
-    profile.update!(name: consumption_profile_name, cigarette_type: smoker_type)
+    profile = smoker_profile
+    if profile.nil?
+      raise ActiveRecord::RecordNotFound, "No smoker profile is linked to this chat" if done?
+
+      profile = user.smoker_profiles.build
+    end
+    profile.update!(user: user, chat: self, name: consumption_profile_name, cigarette_type: smoker_type)
 
     if ["cigarette", "both"].include?(smoker_type)
       cigarette = profile.cigarettes.order(:created_at).last || profile.cigarettes.build
