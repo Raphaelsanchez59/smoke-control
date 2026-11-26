@@ -69,8 +69,12 @@
   <%= profile.years_to_live %>
 </div>
                       <div class="small text-muted mt-1">years estimated</div>
-                    </div>
-                  <% end %>
+      <% end_year = Date.current.year + profile.years_to_live.to_i %>
+      <hr class="my-2">
+      <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">End of life</div>
+      <div class="fw-bold text-dark mt-1">💀 <%= end_year %></div>
+    </div>
+  <% end %>
                   <div class="mt-auto d-grid">
                     <%= link_to "Open", smoker_profile_path(profile), class: "btn btn-primary btn-lg fw-semibold rounded-3" %>
                   </div>
