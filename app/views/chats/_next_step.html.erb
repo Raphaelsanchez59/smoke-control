@@ -1,0 +1,7 @@
+<% if profile %>
+  <%= link_to "See profil", smoker_profile_path(profile), class: "btn btn-primary" %>
+<% else %>
+  <p>Your profile is complete! Log in or create an account to read it.</p>
+  <%= link_to "Connect", new_user_session_path, class: "btn btn-primary" %>
+  <%= link_to "Create an account", new_user_registration_path, class: "btn btn-outline-primary" %>
+<% end %>
