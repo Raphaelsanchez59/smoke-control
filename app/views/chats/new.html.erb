@@ -3,16 +3,21 @@
     <%# Colonne gauche : Chatbot avec première question + réponse ensuite %>
     <section class="col-lg-9">
       <div class="card shadow-sm">
-        <div class="card-header bg-white py-3 text-center">
+        <div class="card-header bg-white py-3 text-center position-relative">
           <h2 class="h4 mb-0">Let's create your smoker profile</h2>
           <% if @chat&.title.present? %>
             <span class="badge text-bg-light border"><%= @chat.title %></span>
           <% end %>
+          <% if @chat&.step == "done" %>
+            <div class="position-absolute top-50 end-0 translate-middle-y me-3">
+              <%= render "chats/generate_profile", chat: @chat %>
+            </div>
+          <% end %>
         </div>
 
-        <div class="card-body p-4 d-flex flex-column gap-3">
+        <div class="card-body p-4 d-flex flex-column gap-3" data-controller="typing" data-action="submit->typing#show">
           <%# affiche les messages %>
-          <div id="chat-messages" data-controller="scroll-bottom" class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 360px; max-height: 500px; overflow-y: auto;">
+          <div id="chat-messages" data-controller="scroll-bottom" data-typing-target="messages" class="border rounded p-3 bg-light d-flex flex-column gap-3" style="min-height: 360px; max-height: 500px; overflow-y: auto;">
             <% if defined?(@messages) && @messages.present? %>
               <% @messages.each do |message| %>
                 <% is_user = message.role == "user" %>
@@ -38,6 +43,8 @@
               </div>
             <% end %>
           </div>
+
+          <%= render "chats/typing_bubble", chat: @chat if @chat&.persisted? %>
 
           <%# Formulaire de réponse directe dans le chat %>
           <% if @chat&.persisted? && defined?(@message) && @message.present? %>
@@ -84,3 +91,4 @@
     </aside>
   </div>
 </div>
+<%= render "chats/login_modal" unless user_signed_in? %>
