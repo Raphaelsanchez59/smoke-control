@@ -25,7 +25,7 @@ class SmokerProfile < ApplicationRecord
        - E-cigarette puffs per day:#{e_cigarette&.puff_by_day || 'none'}
 
        Current year: #{Date.current.year}.
-       Provide an indicative estimate of this person's remaining life expectancy (in years, whole number) and write a short analytical paragraph in French (maximum 4 sentences). Specify that this is an indicative estimate and not medical advice. Respond ONLY with a JSON object. {"years_to_live": <integer>, "analysis": "<text>"}
+       Provide an indicative estimate of this person's remaining life expectancy (in years, whole number) and write a short analytical paragraph in English (maximum 4 sentences). Specify that this is an indicative estimate and not medical advice. Respond ONLY with a JSON object. {"years_to_live": <integer>, "analysis": "<text>"}
     PROMPT
 
     data = JSON.parse(RubyLLM.chat.ask(prompt).content[/\{.*\}/m])
