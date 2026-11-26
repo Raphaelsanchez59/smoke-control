@@ -2,5 +2,5 @@
       data: { turbo: false, action: "formdata->typing#clearInput" } do |f| %>
   <%= f.text_field :content, class: "form-control", placeholder: "Describe your smoking habits…",
         autocomplete: "off", data: { typing_target: "input" } %>
-  <%= f.submit "Send", class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-4 py-2 rounded-3" %>
+  <%= f.submit "Send", class: "btn btn-primary fw-semibold px-4 py-2 rounded-3" %>
 <% end %>
