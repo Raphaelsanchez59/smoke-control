@@ -11,16 +11,8 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  resources :smoker_profiles, only: [:show, :destroy, :new]
-  resources :chats, only: %i[new create show] do
-    collection do
-      get :home_question #renvoi les questions du home
-    end
-    member do
-      post :generate_profile
-    end
-    resources :messages, only: %i[create]
+  resources :chats, only: %i[create show] do
+    resources :messages, only: :create
   end
-  # Definesresources :messages, only: %i[create] the root path route ("/")
-  # root "posts#index"
+  resources :smoker_profiles, only: %i[new show destroy]
 end

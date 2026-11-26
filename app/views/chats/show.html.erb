@@ -1,0 +1,13 @@
+<%# app/views/chats/show.html.erb %>
+<div class="container py-4">
+  <div id="messages">
+    <%= render @messages %>
+  </div>
+  <div id="new_message_container">
+    <% if @chat.collecting? %>
+      <%= render "messages/form", chat: @chat, message: @message %>
+    <% else %>
+      <%= render "chats/next_step", chat: @chat, profile: @profile %>
+    <% end %>
+  </div>
+</div>
