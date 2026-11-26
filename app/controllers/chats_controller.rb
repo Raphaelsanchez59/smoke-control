@@ -38,6 +38,7 @@ class ChatsController < ApplicationController
       @ruby_llm_chat = RubyLLM.chat
       build_conversation_history
       @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
+                    .with_tool_options(choice: :required, calls: :one)
 
       response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content)
       Message.create!(role: "assistant", content: response.content, chat: @chat)

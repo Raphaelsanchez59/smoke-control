@@ -6,8 +6,9 @@ class Chat < ApplicationRecord
     You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
     Your goal: to build the user's smoking profile through natural conversation.
     You have access to a tool:
-    - update_smoker_profile: to be activated as soon as the user provides one or more pieces of information
-    (first name, age or year of birth, start date of smoking, type and quantity consumed).
+    - update_smoker_profile: call it on every turn with only profile information explicitly given in the latest user message.
+    If the message contains no profile information, call it with no values.
+    When the user gives their age, pass it as age, not birth_year.
     Only display what the user has actually said; never invent a value.
     The tool's output and the context below indicate any missing information:
     - if any information is missing, thank them briefly and then request it (maximum 2 at a time);
@@ -21,6 +22,8 @@ class Chat < ApplicationRecord
     - Refillable e-cigarette: ask how many ml of e-liquid they use per week,
       then estimate puffs_per_day = ml per week × 100 ÷ 7 (about 100 puffs per ml) and say it is an estimate.
 
+    If the user corrects previously provided profile information, call the tool with the corrected value.
+    Corrected values replace the previously saved values.
     Formatting: put in bold (**like this**) only the information you are asking the user for, nothing else.
     Do not mention connection or analysis: the interface handles that.
     Do not offer any medical advice. Answer concisely.
@@ -42,14 +45,14 @@ class Chat < ApplicationRecord
     collecting? && missing_fields.size <= 1
   end
 
-  def missing_fields
-    smoker_type = profile_data["smoker_type"].to_s.strip.downcase.tr("-", "_")
+  def missing_fields(data = profile_data)
+    smoker_type = data["smoker_type"].to_s.strip.downcase.tr("-", "_")
     required = ["nickname", "birth_year", "start_smoking_year"]
     required << "smoker_type" unless SmokerProfile::CIGARETTE_TYPES.include?(smoker_type)
     required << "cigarettes_per_day" if ["cigarette", "both"].include?(smoker_type)
     required << "puffs_per_day"      if ["e_cigarette", "both"].include?(smoker_type)
     required << "ecig_nicotine_mg"   if ["e_cigarette", "both"].include?(smoker_type)
-    required.select { |field| profile_data[field].blank? }
+    required.select { |field| data[field].blank? }
   end
 
   def consumption_profile_name
@@ -83,20 +86,31 @@ class Chat < ApplicationRecord
       start_smoking_year: profile_data["start_smoking_year"]
     )
 
-    profile = user.smoker_profiles.create!(name: consumption_profile_name,
-                                           cigarette_type: smoker_type)
+    profile = if done?
+                user.smoker_profiles.order(:created_at).last
+              else
+                user.smoker_profiles.build
+              end
+    profile ||= user.smoker_profiles.build
+    profile.update!(name: consumption_profile_name, cigarette_type: smoker_type)
 
     if ["cigarette", "both"].include?(smoker_type)
-      profile.cigarettes.create!(quantity_by_day: profile_data["cigarettes_per_day"],
-                                 nicotine_mg: profile_data["cigarette_nicotine_mg"])
+      cigarette = profile.cigarettes.order(:created_at).last || profile.cigarettes.build
+      cigarette.update!(quantity_by_day: profile_data["cigarettes_per_day"],
+                        nicotine_mg: profile_data["cigarette_nicotine_mg"])
+    else
+      profile.cigarettes.destroy_all
     end
     if ["e_cigarette", "both"].include?(smoker_type)
-      profile.e_cigarettes.create!(puff_by_day: profile_data["puffs_per_day"],
-                                   nicotine_mg: profile_data["ecig_nicotine_mg"])
+      e_cigarette = profile.e_cigarettes.order(:created_at).last || profile.e_cigarettes.build
+      e_cigarette.update!(puff_by_day: profile_data["puffs_per_day"],
+                          nicotine_mg: profile_data["ecig_nicotine_mg"])
+    else
+      profile.e_cigarettes.destroy_all
     end
 
     profile.generate_profile!
-    update!(step: "done", profile_data: {})
+    update!(step: "done")
     profile
   end
 end

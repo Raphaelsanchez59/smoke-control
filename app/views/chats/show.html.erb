@@ -7,8 +7,7 @@
   <div id="new_message_container">
     <% if @chat.awaiting_login? %>
       <%= render "chats/next_step", chat: @chat, profile: @profile %>
-    <% else %>
-      <%= render "messages/form", chat: @chat, message: @message %>
     <% end %>
+    <%= render "messages/form", chat: @chat, message: @message %>
   </div>
 </div>
