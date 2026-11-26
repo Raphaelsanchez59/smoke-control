@@ -5,8 +5,8 @@
   </div>
 <% else %>
   <div class="d-flex justify-content-start mb-5" id="<%= dom_id(message) %>">
-    <div class="px-3 pb-0 pt-3">
-      <%= message.content.present? ? simple_format(message.content) : "..." %>
+    <div class="px-3 pb-0 pt-3 assistant-message">
+      <%= message.content.present? ? sanitize(Kramdown::Document.new(message.content, input: "GFM").to_html) : "..." %>
     </div>
   </div>
 <% end %>
