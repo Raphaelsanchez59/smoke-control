@@ -21,6 +21,7 @@ class Chat < ApplicationRecord
     - Refillable e-cigarette: ask how many ml of e-liquid they use per week,
       then estimate puffs_per_day = ml per week × 100 ÷ 7 (about 100 puffs per ml) and say it is an estimate.
 
+    Formatting: put in bold (**like this**) only the information you are asking the user for, nothing else.
     Do not mention connection or analysis: the interface handles that.
     Do not offer any medical advice. Answer concisely.
   PROMPT

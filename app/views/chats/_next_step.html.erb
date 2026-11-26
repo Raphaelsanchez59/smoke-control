@@ -1,7 +1,18 @@
-<% if profile %>
-  <%= link_to "See profil", smoker_profile_path(profile), class: "btn btn-primary" %>
-<% else %>
-  <p>Your profile is complete! Log in or create an account to read it.</p>
-  <%= link_to "Connect", new_user_session_path, class: "btn btn-primary" %>
-  <%= link_to "Create an account", new_user_registration_path, class: "btn btn-outline-primary" %>
-<% end %>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 bg-white border border-start border-primary border-4 rounded-3 shadow-sm px-4 py-3 mb-3">
+  <% if profile %>
+    <div>
+      <div class="fw-semibold">Your smoker profile is ready</div>
+      <small class="text-muted">You can keep chatting with Smokey below.</small>
+    </div>
+    <%= link_to "See my profile", smoker_profile_path(profile), class: "btn btn-primary" %>
+  <% else %>
+    <div>
+      <div class="fw-semibold">Your smoker profile is ready</div>
+      <small class="text-muted">Log in or create an account to read it.</small>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to "Log in", new_user_session_path, class: "btn btn-primary" %>
+      <%= link_to "Create an account", new_user_registration_path, class: "btn btn-outline-primary" %>
+    </div>
+  <% end %>
+</div>
