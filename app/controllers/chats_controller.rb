@@ -1,9 +1,18 @@
 class ChatsController < ApplicationController
   skip_before_action :authenticate_user!
 
-  GREETING = "Hello, I'm Smokey, your smoking assistant. We're going to create your smoker profile. " \
-             "I'll need some information: your first name, your age, how long you've been smoking, " \
-             "your consumption…".freeze
+  GREETING = <<~TEXT.freeze
+    Hello, I'm Smokey, your smoking cessation assistant.
+
+    Let's build your smoker profile together.
+
+    To get started, please tell me:
+    - Your name
+    - Your age
+    - When you started smoking
+    - What you use: cigarettes, e-cigarette, or both
+    - Your daily consumption (cigarettes per day and/or puffs per day)
+  TEXT
 
   SYSTEM_PROMPT = <<~PROMPT
     You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
