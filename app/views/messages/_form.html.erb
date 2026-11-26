@@ -1,4 +1,6 @@
-<%= form_with model: [chat, message], class: "d-flex gap-2", data: { turbo: false } do |f| %>
-  <%= f.text_field :content, class: "form-control", placeholder: "Describe your smoking habits…", autocomplete: "off" %>
+<%= form_with model: [chat, message], class: "d-flex gap-2",
+      data: { turbo: false, action: "formdata->typing#clearInput" } do |f| %>
+  <%= f.text_field :content, class: "form-control", placeholder: "Describe your smoking habits…",
+        autocomplete: "off", data: { typing_target: "input" } %>
   <%= f.submit "Send", class: "btn btn-primary" %>
 <% end %>
