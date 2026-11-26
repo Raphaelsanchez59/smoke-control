@@ -3,7 +3,7 @@ class Message < ApplicationRecord
   MAX_USER_MESSAGES = 30
   validate :user_message_limit, if: -> { role == "user" }
 
-  validates :role, inclusion: { in: %w[user assistant] }
+  validates :role, inclusion: { in: ["user", "assistant"] }
   validates :content, presence: true, if: -> { role == "user" }
 
   private

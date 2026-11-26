@@ -8,7 +8,7 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
   parameter :start_smoking_year, type: :integer, required: false,
                                  description: "Year the user started smoking. If “for X years”, deduct the year."
   parameter :smoker_type, required: false,
-                          description: "Type of consumption, exactly: cigarette, e-cigarette or both"
+                          description: "Type of consumption: cigarette, e_cigarette or both. Use the underscore in e_cigarette."
   parameter :cigarettes_per_day, type: :integer, required: false,
                                  description: "Number of cigarettes per day"
   parameter :cigarette_nicotine_mg, type: :number, required: false,
@@ -26,6 +26,8 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
               cigarettes_per_day: nil, cigarette_nicotine_mg: nil, puffs_per_day: nil, ecig_nicotine_mg: nil)
     return { error: "Profile already complete" } unless @chat.collecting?
 
+    smoker_type = smoker_type.to_s.strip.downcase.tr("-", "_")
+    smoker_type = nil unless SmokerProfile::CIGARETTE_TYPES.include?(smoker_type)
     profile_values = {
       "nickname" => nickname, "birth_year" => birth_year, "start_smoking_year" => start_smoking_year,
       "smoker_type" => smoker_type, "cigarettes_per_day" => cigarettes_per_day,

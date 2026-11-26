@@ -1,5 +1,5 @@
 class ChatsController < ApplicationController
-  skip_before_action :authenticate_user!, raise: false
+  skip_before_action :authenticate_user!
 
   GREETING = "Hello, I'm Smokey, your smoking assistant. We're going to create your smoker profile. " \
              "I'll need some information: your first name, your age, how long you've been smoking, " \

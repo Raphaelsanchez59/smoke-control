@@ -15,13 +15,37 @@ class Chat < ApplicationRecord
   end
 
   def missing_fields
-    required = %w[nickname birth_year start_smoking_year smoker_type]
-    required << "cigarettes_per_day" if %w[cigarette both].include?(profile_data["smoker_type"])
-    required << "puffs_per_day"      if %w[e_cigarette both].include?(profile_data["smoker_type"])
+    smoker_type = profile_data["smoker_type"].to_s.strip.downcase.tr("-", "_")
+    required = ["nickname", "birth_year", "start_smoking_year"]
+    required << "smoker_type" unless SmokerProfile::CIGARETTE_TYPES.include?(smoker_type)
+    required << "cigarettes_per_day" if ["cigarette", "both"].include?(smoker_type)
+    required << "puffs_per_day"      if ["e_cigarette", "both"].include?(smoker_type)
     required.select { |field| profile_data[field].blank? }
   end
 
+  def consumption_profile_name
+    cigarettes = profile_data["cigarettes_per_day"]
+    puffs = profile_data["puffs_per_day"]
+    smoker_type = profile_data["smoker_type"].to_s.strip.downcase.tr("-", "_")
+
+    case smoker_type
+    when "cigarette"
+      "Cigarette - #{cigarettes}/day"
+    when "e_cigarette"
+      "E-cigarette - #{puffs} p/by"
+    when "both"
+      "Cigarette - #{cigarettes}/day + E-cigarette - #{puffs} p/by"
+    else
+      "Smoker profile"
+    end
+  end
+
   def save_data_profile!(user) # rubocop:disable Metrics/MethodLength
+    smoker_type = profile_data["smoker_type"].to_s.strip.downcase.tr("-", "_")
+    unless SmokerProfile::CIGARETTE_TYPES.include?(smoker_type)
+      raise ArgumentError, "Unsupported smoker type: #{profile_data['smoker_type']}"
+    end
+
     update!(user: user)
 
     user.update!(
@@ -30,13 +54,14 @@ class Chat < ApplicationRecord
       start_smoking_year: profile_data["start_smoking_year"]
     )
 
-    profile = user.smoker_profiles.create!(name: profile_data["nickname"], cigarette_type: profile_data["smoker_type"])
+    profile = user.smoker_profiles.create!(name: consumption_profile_name,
+                                           cigarette_type: smoker_type)
 
-    if %w[cigarette both].include?(profile_data["smoker_type"])
+    if ["cigarette", "both"].include?(smoker_type)
       profile.cigarettes.create!(quantity_by_day: profile_data["cigarettes_per_day"],
                                  nicotine_mg: profile_data["cigarette_nicotine_mg"])
     end
-    if %w[e_cigarette both].include?(profile_data["smoker_type"])
+    if ["e_cigarette", "both"].include?(smoker_type)
       profile.e_cigarettes.create!(puff_by_day: profile_data["puffs_per_day"],
                                    nicotine_mg: profile_data["ecig_nicotine_mg"])
     end
