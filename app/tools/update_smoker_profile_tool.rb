@@ -1,6 +1,7 @@
 class UpdateSmokerProfileTool < RubyLLM::Tool
   description "Saves the smoker profile information given by the user. " \
-              "Call it each time the user provides new information, passing only the fields they actually gave."
+              "Call it each time the user provides new information, passing only the fields they actually gave. " \
+              "If the result contains 'rejected' values, kindly explain why they seem wrong and ask for them again."
 
   parameter :nickname, description: "User's first name or nickname", required: false
   parameter :birth_year, type: :integer, required: false,
@@ -17,6 +18,12 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
                             description: "Estimated number of e-cigarette puffs per day"
   parameter :ecig_nicotine_mg, type: :number, required: false,
                                description: "Nicotine content of the e-liquid in mg."
+
+  LIMITS = {
+    "cigarettes_per_day" => 1..200,
+    "cigarette_nicotine_mg" => 0..3,
+    "ecig_nicotine_mg" => 0..50
+  }
 
   def initialize(chat:)
     @chat = chat
@@ -35,12 +42,40 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
       "ecig_nicotine_mg" => ecig_nicotine_mg
     }
     new_values = profile_values.select { |_key, value| value.present? }
+    errors = errors_for(new_values)
+    new_values = new_values.except(*errors.keys)
 
     @chat.update!(profile_data: @chat.profile_data.merge(new_values))
 
     missing = @chat.missing_fields
     @chat.update!(step: "awaiting_login") if missing.empty?
 
-    { saved: new_values, profile: @chat.profile_data, missing: missing, complete: missing.empty? }
+    { saved: new_values, rejected: errors, profile: @chat.profile_data, missing: missing, complete: missing.empty? }
+  end
+
+  private
+
+  def errors_for(values)
+    errors = {}
+    year = Date.current.year
+
+    LIMITS.each do |field, range|
+      next if values[field].nil?
+
+      errors[field] = "must be between #{range.min} and #{range.max}" unless range.cover?(values[field].to_f)
+    end
+
+    if values["birth_year"] && !((year - 120)..(year - 18)).cover?(values["birth_year"].to_i)
+      errors["birth_year"] = "the user must be between 18 and 120 years old"
+    end
+
+    start = values["start_smoking_year"]
+    birth = values["birth_year"] || @chat.profile_data["birth_year"]
+    if start
+      errors["start_smoking_year"] = "cannot be in the future" if start.to_i > year
+      errors["start_smoking_year"] = "cannot be before the year of birth" if birth && start.to_i < birth.to_i
+    end
+
+    errors
   end
 end

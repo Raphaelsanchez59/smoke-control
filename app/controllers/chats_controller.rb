@@ -5,20 +5,6 @@ class ChatsController < ApplicationController
              "I'll need some information: your first name, your age, how long you've been smoking, " \
              "your consumption…".freeze
 
-  SYSTEM_PROMPT = <<~PROMPT
-    You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
-    Your goal: to build the user's smoking profile through natural conversation.
-    You have access to a tool:
-    - update_smoker_profile: to be activated as soon as the user provides one or more pieces of information
-    (first name, age or year of birth, start date of smoking, type and quantity consumed).
-    Only display what the user has actually said; never invent a value.
-    The tool's output and the context below indicate any missing information:
-    - if any information is missing, thank them briefly and then request it (maximum 2 at a time);
-    - if the profile is complete, state it in one sentence and summarize it.
-    Do not mention connection or analysis: the interface handles that.
-    Do not offer any medical advice. Answer concisely.
-  PROMPT
-
   def show
     @chat = Chat.find(params[:id])
     @messages = @chat.messages.order(:created_at)
@@ -70,7 +56,7 @@ class ChatsController < ApplicationController
     missing = @chat.missing_fields
 
     <<~TEXT
-      #{SYSTEM_PROMPT}
+      #{Chat::COLLECT_PROMPT}
       Current year: #{Date.current.year}.
       Profile already registered: #{@chat.profile_data.to_json}
       Information still missing: #{missing.empty? ? 'none' : missing.join(', ')}

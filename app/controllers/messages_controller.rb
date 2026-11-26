@@ -1,18 +1,13 @@
 class MessagesController < ApplicationController
   skip_before_action :authenticate_user!
 
-  SYSTEM_PROMPT = <<~PROMPT
+  FOLLOWUP_PROMPT = <<~PROMPT
     You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
-    Your goal: to build the user's smoking profile through natural conversation.
-    You have access to a tool:
-    - update_smoker_profile: to be activated as soon as the user provides one or more pieces of information
-    (first name, age or year of birth, start date of smoking, type and quantity consumed).
-    Only display what the user has actually said; never invent a value.
-    The tool's output and the context below indicate any missing information:
-    - if any information is missing, thank them briefly and then request it (maximum 2 at a time);
-    - if the profile is complete, state it in one sentence and summarize it.
-    Do not mention connection or analysis: the interface handles that.
-    Do not offer any medical advice. Answer concisely.
+    The user's smoker profile is already complete. Chat freely with them about it:
+    their consumption, costs, health impact and how to cut down or quit.
+    Base your answers on the profile below and never invent values.
+    Do not ask for profile information again.
+    Do not offer any medical advice. Answer in English, concisely (120 words maximum).
   PROMPT
 
   before_action :set_chat
@@ -23,9 +18,13 @@ class MessagesController < ApplicationController
     if @message.save
       @ruby_llm_chat = RubyLLM.chat
       build_conversation_history
-      @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
 
-      response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content)
+      if @chat.done?
+        response = @ruby_llm_chat.with_instructions(followup_instructions).ask(@message.content)
+      else
+        @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
+        response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content)
+      end
       Message.create!(role: "assistant", content: response.content, chat: @chat)
 
       @profile = @chat.save_data_profile!(current_user) if @chat.awaiting_login? && user_signed_in?
@@ -61,10 +60,21 @@ class MessagesController < ApplicationController
     missing = @chat.missing_fields
 
     <<~TEXT
-      #{SYSTEM_PROMPT}
+      #{Chat::COLLECT_PROMPT}
       Current year: #{Date.current.year}.
       Profile already registered: #{@chat.profile_data.to_json}
       Information still missing: #{missing.empty? ? 'none' : missing.join(', ')}
+    TEXT
+  end
+
+  def followup_instructions
+    profile = @chat.user&.smoker_profiles&.order(:created_at)&.last
+    details = profile&.attributes&.slice("name", "cigarette_type", "years_to_live", "content")
+
+    <<~TEXT
+      #{FOLLOWUP_PROMPT}
+      Current year: #{Date.current.year}.
+      Smoker profile: #{details.to_json}
     TEXT
   end
 end

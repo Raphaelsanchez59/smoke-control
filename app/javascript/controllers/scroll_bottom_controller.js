@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Fait défiler la zone des messages tout en bas à chaque affichage
+// Fait défiler la page jusqu'au dernier message à chaque affichage
 export default class extends Controller {
   connect() {
-    this.element.scrollTop = this.element.scrollHeight
+    this.element.lastElementChild?.scrollIntoView()
   }
 }

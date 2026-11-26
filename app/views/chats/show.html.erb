@@ -1,13 +1,14 @@
 <%# app/views/chats/show.html.erb %>
-<div class="container py-4">
-  <div id="messages">
+<div class="container py-4" data-controller="typing" data-action="submit->typing#show">
+  <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
     <%= render @messages %>
   </div>
+  <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
   <div id="new_message_container">
-    <% if @chat.collecting? %>
-      <%= render "messages/form", chat: @chat, message: @message %>
-    <% else %>
+    <% if @chat.awaiting_login? %>
       <%= render "chats/next_step", chat: @chat, profile: @profile %>
+    <% else %>
+      <%= render "messages/form", chat: @chat, message: @message %>
     <% end %>
   </div>
 </div>
