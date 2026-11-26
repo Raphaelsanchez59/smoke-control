@@ -35,8 +35,8 @@
                 smoker_profile_path(@smoker_profile),
                 class: "btn btn-light border border-secondary-subtle text-danger fw-semibold px-3 py-2 rounded-3",
                 data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
-    <% if (last_chat = current_user.chats.order(:created_at).last) %>
-      <%= link_to "Chat", chat_path(last_chat), class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
+    <% if @smoker_profile.chat %>
+      <%= link_to "Chat", chat_path(@smoker_profile.chat), class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
     <% end %>
   </div>
 

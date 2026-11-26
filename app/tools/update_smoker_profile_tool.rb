@@ -41,7 +41,7 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
     current_data = @chat.profile_data
     if @chat.done?
       user = @chat.user
-      profile = user&.smoker_profiles&.order(:created_at)&.last
+      profile = @chat.smoker_profile
       return { error: "Saved profile not found" } unless user && profile
 
       cigarette = profile.cigarettes.order(:created_at).last
@@ -56,7 +56,7 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
         "puffs_per_day" => e_cigarette&.puff_by_day,
         "ecig_nicotine_mg" => e_cigarette&.nicotine_mg
       }.select { |_key, value| value.present? }
-        .merge(current_data.select { |_key, value| value.present? })
+       .merge(current_data.select { |_key, value| value.present? })
     end
 
     smoker_type = smoker_type.to_s.strip.downcase.tr("-", "_")
@@ -104,9 +104,7 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
       errors["birth_year"] = "the user must be between 18 and 120 years old"
     end
 
-    if values["start_smoking_year"] && start_year.to_i > year
-      errors["start_smoking_year"] = "cannot be in the future"
-    end
+    errors["start_smoking_year"] = "cannot be in the future" if values["start_smoking_year"] && start_year.to_i > year
     if birth_year && start_year && start_year.to_i < birth_year.to_i
       errors["birth_year"] = "cannot be after the year the user started smoking" if values["birth_year"]
       errors["start_smoking_year"] = "cannot be before the year of birth" if values["start_smoking_year"]
