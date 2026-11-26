@@ -1,0 +1,16 @@
+// Barre de chargement Turbo (en haut de la page)
+.turbo-progress-bar {
+  background-color: $emerald;
+}
+
+// Messages flash (Welcome!, Signed in…)
+.alert {
+  background: $dark-card;
+  color: $dark-text;
+  border: 1px solid $dark-border;
+  border-left: 4px solid $emerald;
+}
+
+.alert .btn-close {
+  filter: invert(1);
+}

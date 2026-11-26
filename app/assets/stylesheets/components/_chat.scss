@@ -1,0 +1,30 @@
+.chat-page {
+  max-width: 900px;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 10px 16px;
+  border-radius: 18px;
+  line-height: 1.5;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.bubble-user {
+  background: $emerald;
+  color: $dark-bg;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble-bot {
+  background: $dark-card;
+  border: 1px solid $dark-border;
+  border-bottom-left-radius: 4px;
+
+  strong {
+    color: $emerald;
+  }
+}

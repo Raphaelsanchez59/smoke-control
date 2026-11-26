@@ -1,20 +1,22 @@
 <div class="container py-5">
-  <div class="card shadow-sm border-0 rounded-4 overflow-hidden mx-auto" style="max-width: 900px;">
+  <div class="card shadow-sm border rounded-4 overflow-hidden mx-auto" style="max-width: 900px;">
     <div class="row g-0 align-items-center">
       <!-- Image à gauche -->
-      <div class="col-md-4 bg-light p-4 text-center">
-      <%= image_tag @smoker_profile.photo_asset,
-                    alt: @smoker_profile.name,
-                    class: "img-fluid rounded-3",
-                    style: "max-height: 260px; object-fit: contain;" %>
-    </div>
+      <div class="col-md-4 bg-body p-4 text-center">
+        <%= image_tag @smoker_profile.photo_asset,
+                      alt: @smoker_profile.name,
+                      class: "img-fluid rounded-3",
+                      style: "max-height: 260px; object-fit: contain;" %>
+      </div>
 
       <!-- Profil en paragraphe à côté -->
       <div class="col-md-8 p-4 p-md-5">
         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
           <h1 class="h3 mb-0"><%= @smoker_profile.name %></h1>
           <% if @smoker_profile.cigarette_type.present? %>
-            <span class="badge text-bg-secondary"><%= @smoker_profile.cigarette_type %></span>
+            <span class="badge rounded-pill border border-primary text-primary px-3 py-2">
+              <%= @smoker_profile.cigarette_type.humanize %>
+            </span>
           <% end %>
         </div>
 
@@ -29,37 +31,37 @@
           </p>
         <% end %>
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-  <div class="d-flex flex-wrap gap-2">
-    <button type="button"
-        class="btn btn-light border border-secondary-subtle text-danger fw-semibold px-3 py-2 rounded-3"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteShowProfileModal">
-  Delete
-</button>
-    <% if (last_chat = current_user.chats.order(:created_at).last) %>
-      <%= link_to "Chat", chat_path(last_chat), class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
-    <% end %>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button"
+                    class="btn btn-outline-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteShowProfileModal">
+              Delete
+            </button>
+            <% if @smoker_profile.chat %>
+              <%= link_to "Chat", chat_path(@smoker_profile.chat), class: "btn btn-primary" %>
+            <% end %>
+          </div>
+
+          <%= link_to "Back to home", root_path, class: "btn border text-body" %>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <%= link_to "Back to home", root_path, class: "btn btn-light border border-secondary-subtle text-dark fw-semibold px-3 py-2 rounded-3" %>
-</div>
-</div>
-      </div>
-    </div>
-  </div>
   <div class="modal fade" id="deleteShowProfileModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 shadow p-3">
-      <p class="mb-3 fw-semibold">Delete this profile?</p>
-      <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light border border-secondary-subtle rounded-3" data-bs-dismiss="modal">Cancel</button>
-        <%= button_to "Delete",
-                      smoker_profile_path(@smoker_profile),
-                      method: :delete,
-                      class: "btn btn-light border border-danger-subtle text-danger fw-semibold rounded-3" %>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border rounded-4 shadow p-3">
+        <p class="mb-3 fw-semibold">Delete this profile?</p>
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn border text-body" data-bs-dismiss="modal">Cancel</button>
+          <%= button_to "Delete",
+                        smoker_profile_path(@smoker_profile),
+                        method: :delete,
+                        class: "btn btn-danger" %>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>
