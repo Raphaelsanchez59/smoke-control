@@ -40,10 +40,11 @@
                     style: "height: 200px; width: 100%; object-fit: cover;",
                     alt: profile.name.presence || "Smoker profile"
                   ) %>
-                  <%= link_to "×", smoker_profile_path(profile),
-                    class: "btn btn-danger btn-sm position-absolute top-0 end-0 m-2",
-                    data: { turbo_method: :delete, turbo_confirm: "Are you sure?"
-                  } %>
+                  <%= link_to "&times;".html_safe,
+            smoker_profile_path(profile),
+            class: "position-absolute top-0 end-0 m-2 text-dark text-decoration-none fw-bold",
+            style: "font-size: 2rem; line-height: 1;",
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
                 </div>
                 <div class="card-body p-4 d-flex flex-column">
                   <div class="d-flex flex-wrap gap-2 mb-3">
@@ -82,7 +83,9 @@
     </div>
   <% end %>
                   <div class="mt-auto d-grid">
-                    <%= link_to "Open", smoker_profile_path(profile), class: "btn btn-primary btn-lg fw-semibold rounded-3" %>
+                    <%= link_to "Open",
+                      smoker_profile_path(profile),
+                      class: "btn btn-light border border-secondary-subtle text-dark fw-semibold py-3 rounded-3 fs-5" %>
                   </div>
                 </div>
               </div>
