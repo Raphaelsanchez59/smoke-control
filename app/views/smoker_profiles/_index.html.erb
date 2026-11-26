@@ -33,12 +33,18 @@
                                    end %>
             <div class="col">
               <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                <%= image_tag(
-                      profile.image.presence || image_name,
-                      class: "card-img-top",
-                      style: "height: 200px; width: 100%; object-fit: cover;",
-                      alt: profile.name.presence || "Smoker profile"
-                    ) %>
+                <div class="card-img position-relative">
+                  <%= image_tag(
+                    profile.image.presence || image_name,
+                    class: "card-img-top",
+                    style: "height: 200px; width: 100%; object-fit: cover;",
+                    alt: profile.name.presence || "Smoker profile"
+                  ) %>
+                  <%= link_to "×", smoker_profile_path(profile),
+                    class: "btn btn-danger btn-sm position-absolute top-0 end-0 m-2",
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure?"
+                  } %>
+                </div>
                 <div class="card-body p-4 d-flex flex-column">
                   <div class="d-flex flex-wrap gap-2 mb-3">
                     <span class="badge rounded-pill bg-secondary-subtle text-dark border px-3 py-2 fw-semibold">
@@ -69,8 +75,12 @@
   <%= profile.years_to_live %>
 </div>
                       <div class="small text-muted mt-1">years estimated</div>
-                    </div>
-                  <% end %>
+      <% end_year = Date.current.year + profile.years_to_live.to_i %>
+      <hr class="my-2">
+      <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">End of life</div>
+      <div class="fw-bold text-dark mt-1">💀 <%= end_year %></div>
+    </div>
+  <% end %>
                   <div class="mt-auto d-grid">
                     <%= link_to "Open", smoker_profile_path(profile), class: "btn btn-primary btn-lg fw-semibold rounded-3" %>
                   </div>

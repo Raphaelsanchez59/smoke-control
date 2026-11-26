@@ -36,6 +36,7 @@
           <% if (last_chat = current_user.chats.order(:created_at).last) %>
             <%= link_to "Back to chat", chat_path(last_chat), class: "btn btn-primary" %>
           <% end %>
+          <%= link_to "Delete this profile", smoker_profile_path,class: "btn btn-danger",data: { turbo_method: :delete, turbo_confirm: "Are you sure?"} %>
         </div>
       </div>
     </div>
