@@ -41,8 +41,10 @@ class Chat < ApplicationRecord
     step == "done"
   end
 
-  def cigarettes_smoked
-    ordered = messages.order(:created_at).to_a
+  def cigarettes_smoked(since: nil)
+    ordered = messages.order(:created_at)
+    ordered = ordered.where("created_at > ?", since) if since
+    ordered = ordered.to_a
 
     ordered.each_cons(2).sum do |previous, current|
       if previous.role == "user" && current.role == "assistant"
@@ -51,6 +53,27 @@ class Chat < ApplicationRecord
         0
       end
     end
+  end
+
+  def add_recap_message!(profile)
+    previous_recap = messages.where(recap: true).order(:created_at).last
+    years = "#{profile.years_to_live} #{'year'.pluralize(profile.years_to_live)}"
+
+    if previous_recap.nil?
+      smoked = cigarettes_smoked
+      text = "🚬 By the way, I smoked **#{smoked} #{'cigarette'.pluralize(smoked)}** while talking to you.\n\n" \
+             "💀 Based on what you told me, you have about **#{years}** left to live. Every cigarette counts."
+    else
+      smoked = cigarettes_smoked(since: previous_recap.created_at)
+      cigarettes_line = if smoked.zero?
+                          "🚬 That was quick, I didn't even have time to light one."
+                        else
+                          "🚬 I smoked **#{smoked} more #{'cigarette'.pluralize(smoked)}**."
+                        end
+      text = "#{cigarettes_line}\n\n💀 With that information, I now estimate you have about **#{years}** left to live."
+    end
+
+    messages.create!(role: "assistant", content: text, recap: true)
   end
 
   def report_next?
@@ -123,6 +146,7 @@ class Chat < ApplicationRecord
 
     profile.generate_profile!
     update!(step: "done")
+    add_recap_message!(profile)
     profile
   end
 end

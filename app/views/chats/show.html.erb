@@ -7,18 +7,6 @@
       <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
         <%= render @messages %>
       </div>
-      <% if @chat.done? || @chat.awaiting_login? %>
-        <div class="d-flex justify-content-start mb-3">
-          <div class="bubble bubble-bot">
-            <p>🚬 By the way, I smoked <strong><%= pluralize(@chat.cigarettes_smoked, "cigarette") %></strong> while talking to you.</p>
-            <% if @chat.smoker_profile&.years_to_live.present? %>
-              <p>💀 Based on what you told me, you have about <strong><%= pluralize(@chat.smoker_profile.years_to_live, "year") %></strong> left to live. Every cigarette counts.</p>
-            <% elsif @chat.awaiting_login? %>
-              <p>🔒 Log in and I'll tell you <strong>how many years you have left</strong>.</p>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
       <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
       <div id="new_message_container">
         <% if @chat.awaiting_login? %>
