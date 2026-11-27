@@ -1,0 +1,116 @@
+<%
+  profile_data = local_assigns[:profile_data] # Depuis le chat (chats)
+  smoker_profil = local_assigns[:smoker_profil] # Depuis la Home (smoker_profiles) et le chat (chats)
+  smoker_profile = smoker_profil
+  cigarette_type = profile_data ? profile_data["smoker_type"] : smoker_profile&.cigarette_type
+  profile_name = profile_data ? profile_data["nickname"].presence || smoker_profile&.name : smoker_profile&.name
+  profile_content = profile_data ? profile_data["content"].presence || smoker_profile&.content : smoker_profile&.content
+  profile_image = if profile_data
+                    profile_data["image"].presence || smoker_profile&.image.presence ||
+                      SmokerProfile.new(cigarette_type: cigarette_type).photo_asset
+                  else
+                    smoker_profile&.image.presence || smoker_profile&.photo_asset
+                  end
+  daily_cig = if profile_data
+                profile_data["cigarettes_per_day"].presence ||
+                  smoker_profile&.cigarettes&.order(:created_at)&.last&.quantity_by_day
+              else
+                smoker_profile&.cigarettes&.order(:created_at)&.last&.quantity_by_day
+              end
+  daily_puffs = if profile_data
+                  profile_data["puffs_per_day"].presence ||
+                    smoker_profile&.e_cigarettes&.order(:created_at)&.last&.puff_by_day
+                else
+                  smoker_profile&.e_cigarettes&.order(:created_at)&.last&.puff_by_day
+              end
+
+  birth_year = profile_data&.[]("birth_year")
+  profile_age = Date.current.year - birth_year.to_i if birth_year.present?
+
+  consumption_values = []
+  consumption_values << "#{daily_cig} cig/day" if ["cigarette", "both"].include?(cigarette_type) && daily_cig.present?
+  consumption_values << "#{daily_puffs} puffs/day" if ["e_cigarette", "both"].include?(cigarette_type) && daily_puffs.present?
+  consumption_label = consumption_values.join(" · ")
+  years_to_live = profile_data ? profile_data["years_to_live"].presence || smoker_profile&.years_to_live : smoker_profile&.years_to_live
+  end_year = Date.current.year + years_to_live.to_i if years_to_live.present?
+
+  total = @smoker_profiles&.size || 1
+  pos = @smoker_profiles&.index(smoker_profil).to_i
+  ratio = total > 1 ? 1.0 - (pos.to_f / (total - 1)) : 1.0
+
+  if ratio >= 0.66
+    red, green, blue = 22, 163, 74
+  elsif ratio >= 0.33
+    red, green, blue = 234, 88, 12
+  else
+    red, green, blue = 220, 38, 38
+  end
+
+%>
+<div class="col">
+  <div class="card h-100 border shadow-sm rounded-4 overflow-hidden position-relative">
+    <div class="card-img position-relative">
+      <%= image_tag(
+            profile_image,
+            class: "card-img-top",
+            style: "height: 200px; width: 100%; object-fit: contain; background-color: #ffffff;",
+            alt: profile_name.presence || "Smoker profile"
+          ) %>
+      <% unless profile_data %>
+        <%= link_to "&times;".html_safe,
+                    "#deleteProfileModal",
+                    class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 fw-bold z-2",
+                    style: "line-height: 1;",
+                    data: {
+                      bs_toggle: "modal",
+                      bs_target: "#deleteProfileModal",
+                      delete_url: smoker_profile_path(smoker_profil)
+                    },
+                    onclick: "document.getElementById('deleteProfileForm').action = this.dataset.deleteUrl",
+                    "aria-label": "Delete profile" %>
+      <% end %>
+    </div>
+    <div class="card-body p-4 d-flex flex-column gap-3">
+      <div class="hstack flex-wrap gap-2">
+        <% if profile_age.present? %>
+          <span class="badge rounded-pill bg-light border px-3 py-2 fw-semibold">
+            <%= profile_age %> years
+          </span>
+        <% end %>
+        <% if consumption_label.present? %>
+          <span class="badge rounded-pill border border-primary text-primary px-3 py-2 fw-semibold">
+            <%= consumption_label %>
+          </span>
+        <% end %>
+      </div>
+      <% if profile_data && profile_name.present? && !profile_content.present? %>
+        <h3 class="h4 fw-bold border-bottom pb-2 mb-0">
+          <%= profile_name %>
+        </h3>
+      <% elsif profile_content.present? %>
+        <h3 class="h4 fw-bold border-bottom pb-2 mb-0">
+          <%= link_to profile_name.presence || "Unnamed Profile",
+                      smoker_profile_path(smoker_profil),
+                      class: "text-reset text-decoration-none stretched-link" %> ici 2
+        </h3>
+      <% end %>
+      <% if profile_data && profile_content.present? %>
+        <p class="text-body-secondary mb-0"><%= profile_content %></p>
+      <% end %>
+      <div class="bg-body rounded-3 p-3 text-center border vstack gap-1">
+        <div class="text-uppercase small fw-bold text-muted letter-spacing">
+          Years to live
+        </div>
+        <div class="display-5 fw-bolder lh-1 mt-1" style="color: rgb(<%= red %>, <%= green %>, <%= blue %>);">
+          <%= years_to_live || "—" %>
+        </div>
+        <div class="small text-muted mt-1">years estimated</div>
+        <hr class="my-2">
+        <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">
+          End of life
+        </div>
+        <div class="fw-bold mt-1"><%= end_year || "—" %></div>
+      </div>
+    </div>
+  </div>
+</div>

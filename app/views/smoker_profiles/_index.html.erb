@@ -1,10 +1,4 @@
 <% if user_signed_in? %>
-  <% user_age = if current_user.respond_to?(:birth_date) && current_user.birth_date.present?
-                  today = Date.current
-                  today.year - current_user.birth_date.year - ((today.month > current_user.birth_date.month || (today.month == current_user.birth_date.month && today.day >= current_user.birth_date.day)) ? 0 : 1)
-                else
-                  35
-                end %>
   <section class="card border-0 shadow-sm rounded-4 bg-transparent">
     <div class="card-body p-4 p-lg-5">
       <div class="text-center mb-4">
@@ -14,113 +8,35 @@
       <% if @smoker_profiles.any? %>
         <div class="row row-cols-1 row-cols-md-3 g-4">
           <% @smoker_profiles.each do |profile| %>
-            <% image_name = case profile.cigarette_type
-                            when "e_cigarette" then "ecigarette.jpg"
-                            else "cigarette.jpg"
-                            end %>
-            <% daily_cig = profile.cigarettes.first&.quantity_by_day %>
-            <% daily_puffs = profile.e_cigarettes.first&.puff_by_day %>
-            <% consumption_label = if daily_cig.present? && daily_puffs.present?
-                                    "#{daily_cig} cig/day · #{daily_puffs} puffs/day"
-                                  elsif daily_puffs.present?
-                                    "#{daily_puffs} puffs/day"
-                                  elsif daily_cig.present?
-                                    "#{daily_cig} cig/day"
-                                  elsif profile.cigarette_type == "e_cigarette"
-                                    "150 puffs/day"
-                                  else
-                                    "15 cig/day"
-                                  end %>
-            <div class="col">
-              <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                <div class="card-img position-relative">
-                  <%= image_tag(
-                    profile.image.presence || image_name,
-                    class: "card-img-top",
-                    style: "height: 200px; width: 100%; object-fit: contain; background-color: #ffffff;",
-                    alt: profile.name.presence || "Smoker profile"
-                  ) %>
-                  <%= link_to "&times;".html_safe,
-                  "#deleteProfileModal",
-                  class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 fw-bold",
-                  style: "line-height: 1;",
-                  data: {
-                    bs_toggle: "modal",
-                    bs_target: "#deleteProfileModal",
-                    delete_url: smoker_profile_path(profile)
-                  },
-                  onclick: "document.getElementById('deleteProfileForm').action = this.dataset.deleteUrl",
-                  "aria-label": "Delete profile" %>
-                </div>
-                <div class="card-body p-4 d-flex flex-column">
-                  <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge rounded-pill bg-light border px-3 py-2 fw-semibold">
-                      <%= user_age %> years
-                    </span>
-                    <span class="badge rounded-pill border border-primary text-primary px-3 py-2 fw-semibold">
-                      <%= consumption_label %>
-                    </span>
-                  </div>
-                  <h3 class="h4 fw-bold border-bottom pb-2 mb-3">
-                    <%= profile.name.presence || "Unnamed Profile" %>
-                  </h3>
-                  <% if profile.years_to_live.present? %>
-                    <div class="bg-body rounded-3 p-3 text-center mb-4 border">
-                      <div class="text-uppercase small fw-bold text-muted letter-spacing">
-                        Years to live
-                      </div>
-                      <% total = @smoker_profiles.size %><% pos = @smoker_profiles.index(profile).to_i %><% ratio = total > 1 ? 1.0 - (pos.to_f / (total - 1)) : 1.0 %>
-                      <% if ratio >= 0.66 %>
-                        <% red, green, blue = 22, 163, 74 %>
-                      <% elsif ratio >= 0.33 %>
-                        <% red, green, blue = 234, 88, 12 %>
-                      <% else %>
-                        <% red, green, blue = 220, 38, 38 %>
-                      <% end %>
-                      <div class="display-5 fw-bolder lh-1 mt-1" style="color: rgb(<%= red %>, <%= green %>, <%= blue %>);">
-                        <%= profile.years_to_live %>
-                      </div>
-                      <div class="small text-muted mt-1">years estimated</div>
-                      <% end_year = Date.current.year + profile.years_to_live.to_i %>
-                      <hr class="my-2">
-                      <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">End of life</div>
-                      <div class="fw-bold mt-1">💀 <%= end_year %></div>
-                    </div>
-                  <% end %>
-                  <div class="mt-auto d-grid">
-                    <%= link_to "Open",
-                      smoker_profile_path(profile),
-                      class: "btn btn-light border border-secondary-subtle fw-semibold py-3 rounded-3 fs-5" %>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <%= render "smoker_profiles/card",
+                       profile_data: profile.chat&.profile_data,
+                       smoker_profil: profile %>
           <% end %>
         </div>
         <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content border rounded-4 shadow p-3">
-            <p class="mb-3 fw-semibold">Delete this profile?</p>
-            <div class="d-flex justify-content-end gap-2">
-              <button type="button" class="btn border text-body" data-bs-dismiss="modal">Cancel</button>
-              <form id="deleteProfileForm" method="post">
-                <input type="hidden" name="_method" value="delete">
-                <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-                <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border rounded-4 shadow p-3">
+              <p class="mb-3 fw-semibold">Delete this profile?</p>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn border text-body" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteProfileForm" method="post">
+                  <input type="hidden" name="_method" value="delete">
+                  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      <% else %>
-        <div class="border rounded-3 bg-light text-center py-5 px-4 my-2">
-          <div class="mx-auto" style="max-width: 26rem;">
-            <h3 class="h6 fw-semibold mb-1">No smoker profile yet</h3>
-            <p class="text-body-secondary small mb-0">
-              Create a smoker profile to find out how much time you have left to live.
-            </p>
+        <% else %>
+          <div class="border rounded-3 bg-light text-center py-5 px-4 my-2">
+            <div class="mx-auto" style="max-width: 26rem;">
+              <h3 class="h6 fw-semibold mb-1">No smoker profile yet</h3>
+              <p class="text-body-secondary small mb-0">
+                Create a smoker profile to find out how much time you have left to live.
+              </p>
+            </div>
           </div>
-        </div>
-      <% end %>
-    </div>
-  </section>
-<% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
