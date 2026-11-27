@@ -50,6 +50,13 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
     missing = @chat.missing_fields
     @chat.update!(step: "awaiting_login") if missing.empty?
 
+    Turbo::StreamsChannel.broadcast_update_to(
+      [@chat, :side_profile],
+      target: ActionView::RecordIdentifier.dom_id(@chat, :side_profile),
+      partial: "chats/side_profile",
+      locals: { chat: @chat }
+    )
+
     { saved: new_values, rejected: errors, profile: @chat.profile_data, missing: missing, complete: missing.empty? }
   end
 
