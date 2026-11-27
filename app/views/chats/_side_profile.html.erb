@@ -36,20 +36,28 @@
             <span class="badge text-bg-light border"><%= Date.today.year - chat.profile_data["birth_year"]  %> years</span>
             <% end %>
             <% if chat.profile_data["smoker_type"] == "cigarette" %>
-              <span class="badge text-bg-light border">
-                <%= chat.profile_data["cigarettes_per_day"] %> cigarettes/day
-              </span>
+              <% if chat.profile_data["cigarettes_per_day"].present? %>
+                <span class="badge text-bg-light border">
+                  <%= chat.profile_data["cigarettes_per_day"] %> cigarettes/day
+                </span>
+              <% end %>
             <% elsif chat.profile_data["smoker_type"] == "e_cigarette" %>
-              <span class="badge text-bg-light border">
-                <%= chat.profile_data["puff_by_day"] %> puffs/day
-              </span>
+              <% if chat.profile_data["puffs_per_day"].present? %>
+                <span class="badge text-bg-light border">
+                  <%= chat.profile_data["puffs_per_day"] %> puffs/day
+                </span>
+              <% end %>
             <% elsif chat.profile_data["smoker_type"] == "both" %>
-              <span class="badge text-bg-light border">
-                <%= chat.profile_data["cigarettes_per_day"] %> cigarettes/day
-              </span>
-              <span class="badge text-bg-light border">
-                <%= chat.profile_data["puff_by_day"] %> puffs/day
-              </span>
+              <% if chat.profile_data["cigarettes_per_day"].present? %>
+                <span class="badge text-bg-light border">
+                  <%= chat.profile_data["cigarettes_per_day"] %> cigarettes/day
+                </span>
+              <% end %>
+              <% if chat.profile_data["puffs_per_day"].present? %>
+                <span class="badge text-bg-light border">
+                  <%= chat.profile_data["puffs_per_day"] %> puffs/day
+                </span>
+              <% end %>
             <% end %>
           </div>
         </div>
