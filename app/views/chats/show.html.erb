@@ -10,4 +10,8 @@
     <% end %>
     <%= render "messages/form", chat: @chat, message: @message %>
   </div>
+  <%= turbo_stream_from @chat, :side_profile %>
+  <div id="<%= dom_id(@chat, :side_profile) %>">
+    <%= render "chats/side_profile", chat: @chat if @chat.profile_data.present? %>
+  </div>
 </div>

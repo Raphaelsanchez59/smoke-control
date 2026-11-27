@@ -52,6 +52,7 @@ class ChatsController < ApplicationController
     end
   end
 
+
   private
 
   def build_conversation_history
@@ -61,6 +62,8 @@ class ChatsController < ApplicationController
       @ruby_llm_chat.add_message(role: message.role, content: message.content)
     end
   end
+
+
 
   def instructions
     missing = @chat.missing_fields
