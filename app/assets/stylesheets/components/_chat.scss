@@ -1,5 +1,5 @@
 .chat-page {
-  max-width: 900px;
+  max-width: 1024px;
 }
 
 .bubble {
@@ -28,8 +28,6 @@
     color: $emerald;
   }
 }
-
-
 
 // Cigarette qui se consume (remplace les 3 petits points)
 .cigarette-loader {
@@ -80,18 +78,32 @@
 }
 
 @keyframes cig-burn {
-  from { width: 60px; }
-  to   { width: 6px; }
+  from {
+    width: 60px;
+  }
+  to {
+    width: 6px;
+  }
 }
 
 @keyframes cig-glow {
-  from { box-shadow: 0 0 4px #ff5a1f; }
-  to   { box-shadow: 0 0 10px #ff8a3d; }
+  from {
+    box-shadow: 0 0 4px #ff5a1f;
+  }
+  to {
+    box-shadow: 0 0 10px #ff8a3d;
+  }
 }
 
 @keyframes cig-smoke {
-  0%   { transform: translate(0, 0) scale(0.6); opacity: 0.7; }
-  100% { transform: translate(-6px, -20px) scale(1.8); opacity: 0; }
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-6px, -20px) scale(1.8);
+    opacity: 0;
+  }
 }
 
 // Variante grande, sur toute la largeur (page d'accueil)
@@ -127,6 +139,10 @@
 }
 
 @keyframes cig-burn-wide {
-  from { width: calc(100% - 98px); }
-  to   { width: 4px; }
+  from {
+    width: calc(100% - 98px);
+  }
+  to {
+    width: 4px;
+  }
 }

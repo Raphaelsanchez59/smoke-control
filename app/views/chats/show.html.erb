@@ -1,31 +1,26 @@
-<%# app/views/chats/show.html.erb %>
 <div class="container py-4 chat-page" data-controller="typing" data-action="submit->typing#show">
-  <div class="row g-4">
-
-    <!-- Colonne de gauche : le chat -->
-    <div class="col-lg-8">
-      <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
+  <div class="row g-4 align-items-end">
+    <div class="col-12 col-lg-7">
+      <div id="messages" data-controller="scroll-bottom" data-typing-target="messages"  >
         <%= render @messages %>
       </div>
       <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
       <div id="new_message_container">
         <% if @chat.awaiting_login? %>
           <%= render "chats/next_step", chat: @chat, profile: @profile %>
-        <% else %>
-          <%= render "messages/form", chat: @chat, message: @message %>
+        <% end %>
+        <%= render "messages/form", chat: @chat, message: @message %>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <%= turbo_stream_from @chat, :side_profile %>
+      <div id="<%= dom_id(@chat, :side_profile) %>">
+        <% if @chat.profile_data.present? %>
+          <%= render "smoker_profiles/card",
+                     profile_data: @chat.profile_data,
+                     smoker_profil: @chat.smoker_profile %>
         <% end %>
       </div>
     </div>
-
-    <!-- Colonne de droite : le profil latéral -->
-    <div class="col-lg-4">
-      <div class="sticky-top" style="top: 1rem;">
-        <%= turbo_stream_from @chat, :side_profile %>
-        <div id="<%= dom_id(@chat, :side_profile) %>">
-          <%= render "chats/side_profile", chat: @chat if @chat.profile_data.present? %>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>

@@ -51,6 +51,7 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
         "birth_year" => user.birth_date&.year,
         "start_smoking_year" => user.start_smoking_year,
         "smoker_type" => profile.cigarette_type,
+        "image" => profile.image,
         "cigarettes_per_day" => cigarette&.quantity_by_day,
         "cigarette_nicotine_mg" => cigarette&.nicotine_mg,
         "puffs_per_day" => e_cigarette&.puff_by_day,
@@ -61,18 +62,27 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
 
     smoker_type = smoker_type.to_s.strip.downcase.tr("-", "_")
     smoker_type = nil unless SmokerProfile::CIGARETTE_TYPES.include?(smoker_type)
+    effective_smoker_type = smoker_type || current_data["smoker_type"]
+    image = case effective_smoker_type
+            when "e_cigarette", "ecigarette", "e-cigarette", "vape"
+              "ecigarette.jpg"
+            when "both", "cigarette_and_e_cigarette"
+              "ecigarette-cigarette.jpg"
+            else
+              "cigarette.jpg"
+            end
     birth_year = Date.current.year - age.to_i if age.present?
 
     profile_values = {
       "nickname" => nickname, "birth_year" => birth_year, "start_smoking_year" => start_smoking_year,
       "smoker_type" => smoker_type, "cigarettes_per_day" => cigarettes_per_day,
       "cigarette_nicotine_mg" => cigarette_nicotine_mg, "puffs_per_day" => puffs_per_day,
-      "ecig_nicotine_mg" => ecig_nicotine_mg
+      "ecig_nicotine_mg" => ecig_nicotine_mg, "image" => image
     }
     new_values = profile_values.select { |_key, value| value.present? }
     errors = errors_for(new_values, current_data)
     new_values = new_values.except(*errors.keys)
-    changed_values = new_values.select { |key, value| current_data[key] != value }
+    changed_values = new_values.reject { |key, value| current_data[key] == value }
     updated_data = current_data.merge(changed_values)
 
     @chat.update!(profile_data: updated_data) if changed_values.present?
@@ -85,8 +95,9 @@ class UpdateSmokerProfileTool < RubyLLM::Tool
     Turbo::StreamsChannel.broadcast_update_to(
       [@chat, :side_profile],
       target: ActionView::RecordIdentifier.dom_id(@chat, :side_profile),
-      partial: "chats/side_profile",
-      locals: { chat: @chat }
+      partial: "smoker_profiles/card",
+      locals: { profile_data: @chat.profile_data,
+                smoker_profil: @chat.smoker_profile }
     )
 
     { saved: new_values, rejected: errors, profile: @chat.profile_data, missing: missing, complete: missing.empty? }
