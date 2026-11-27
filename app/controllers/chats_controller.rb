@@ -14,6 +14,21 @@ class ChatsController < ApplicationController
     Don't worry, I don't judge. I just count.
   TEXT
 
+  def self.greeting_for(user)
+    return GREETING unless user&.birth_date.present? && user.start_smoking_year.present?
+
+    <<~TEXT
+      Welcome back, **#{user.nickname}** 🚬💀.
+
+      I already know your age and when you started. Just tell me:
+
+      - **what** you smoke: cigarettes, e-cigarette, or both
+      - **how much** per day
+
+      Let's see if things got better. Or worse. I just count.
+    TEXT
+  end
+
   def show
     @chat = Chat.find(params[:id])
     @messages = @chat.messages.order(:created_at)
@@ -30,8 +45,15 @@ class ChatsController < ApplicationController
 
   def create
     @chat = Chat.new(title: "My smoking profile", user: current_user)
+    if user_signed_in?
+      @chat.profile_data = {
+        "nickname" => current_user.nickname,
+        "birth_year" => current_user.birth_date&.year,
+        "start_smoking_year" => current_user.start_smoking_year
+      }.compact
+    end
     @chat.save!
-    Message.create!(role: "assistant", content: GREETING, chat: @chat)
+    Message.create!(role: "assistant", content: self.class.greeting_for(current_user), chat: @chat)
     @message = Message.new(role: "user", content: params[:message]["content"], chat: @chat)
 
     if @message.save

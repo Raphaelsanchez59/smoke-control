@@ -9,7 +9,7 @@
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body p-4 text-center">
-          <%= render "chats/home_question", greeting: ChatsController::GREETING %>
+          <%= render "chats/home_question", greeting: ChatsController.greeting_for(current_user) %>
         </div>
       </div>
     </div>
