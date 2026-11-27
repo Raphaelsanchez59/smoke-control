@@ -1,8 +1,26 @@
-<%= simple_format(greeting, class: "h5 fw-semibold mb-4 text-start") %>
-<%= form_with scope: :message, url: chats_path, method: :post do |form| %>
-  <div class="mb-3">
-    <%= form.text_area :content, class: "form-control", rows: 3, required: true,
-          placeholder: "Your answer…" %>
+<div data-controller="typing" data-action="submit->typing#show">
+  <div data-typing-target="messages">
+    <div class="bubble-bot text-start mb-4 p-3 rounded-4">
+      <%= sanitize(Kramdown::Document.new(greeting, input: "GFM").to_html) %>
+    </div>
   </div>
+
+  <template data-typing-target="template">
+    <div class="cigarette-loader cigarette-loader--wide mb-4" role="status">
+      <span class="cig-ember">
+        <span class="cig-smoke"></span>
+        <span class="cig-smoke"></span>
+      </span>
+      <span class="cig-paper"></span>
+      <span class="cig-filter"></span>
+    </div>
+  </template>
+
+  <%= form_with scope: :message, url: chats_path, method: :post do |form| %>
+    <div class="mb-3">
+      <%= form.text_area :content, class: "form-control", rows: 3, required: true,
+            placeholder: "Your answer…" %>
+    </div>
     <%= form.submit "Create my profile", class: "btn btn-primary fw-semibold px-4 py-3 rounded-3 fs-5" %>
-<% end %>
+  <% end %>
+</div>

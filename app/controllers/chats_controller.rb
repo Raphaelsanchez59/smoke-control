@@ -2,16 +2,16 @@ class ChatsController < ApplicationController
   skip_before_action :authenticate_user!
 
   GREETING = <<~TEXT.freeze
-    Hello, I'm Smokey, your smoking cessation assistant.
+    Hey, I'm **Smokey** 🚬💀, your (slightly too honest) smoking assistant.
 
-    Let's build your smoker profile together.
+    Let's find out what your habit is really costing you. Just tell me:
 
-    To get started, please tell me:
-    - Your name
-    - Your age
-    - When you started smoking
-    - What you use: cigarettes, e-cigarette, or both
-    - Your daily consumption (cigarettes per day and/or puffs per day)
+    - your **first name** and **age**
+    - **when** you started smoking
+    - **what** you smoke: cigarettes, e-cigarette, or both
+    - **how much** per day
+
+    Don't worry, I don't judge. I just count.
   TEXT
 
   def show
@@ -24,7 +24,7 @@ class ChatsController < ApplicationController
     @profile = if @chat.awaiting_login?
                  @chat.save_data_profile!(current_user)
                elsif @chat.done?
-                   @chat.smoker_profile
+                 @chat.smoker_profile
                end
   end
 
@@ -52,7 +52,6 @@ class ChatsController < ApplicationController
     end
   end
 
-
   private
 
   def build_conversation_history
@@ -62,8 +61,6 @@ class ChatsController < ApplicationController
       @ruby_llm_chat.add_message(role: message.role, content: message.content)
     end
   end
-
-
 
   def instructions
     missing = @chat.missing_fields

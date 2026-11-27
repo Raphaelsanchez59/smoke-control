@@ -3,12 +3,20 @@
   <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
     <%= render @messages %>
   </div>
+  <% if @chat.done? || @chat.awaiting_login? %>
+    <div class="d-flex justify-content-start mb-3">
+      <div class="bubble bubble-bot">
+        🚬💀 By the way, I smoked <strong><%= pluralize(@chat.cigarettes_smoked, "cigarette") %></strong> while talking to you.
+      </div>
+    </div>
+  <% end %>
   <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
   <div id="new_message_container">
     <% if @chat.awaiting_login? %>
       <%= render "chats/next_step", chat: @chat, profile: @profile %>
+    <% else %>
+      <%= render "messages/form", chat: @chat, message: @message %>
     <% end %>
-    <%= render "messages/form", chat: @chat, message: @message %>
   </div>
   <%= turbo_stream_from @chat, :side_profile %>
   <div id="<%= dom_id(@chat, :side_profile) %>">
