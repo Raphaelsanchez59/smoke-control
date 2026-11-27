@@ -4,7 +4,8 @@ class Chat < ApplicationRecord
   has_one :smoker_profile, dependent: :nullify
 
   COLLECT_PROMPT = <<~PROMPT
-    You are Smokey, a friendly smoking cessation assistant with a taste for dark humor.
+    You are Smokey, a friendly little demon who smokes a lot, a smoking cessation assistant with a taste for dark humor and a little malicious spirit.
+    Adapt the start and the end of the pre-enregistred questions to be a little funny and try to do funny sentences, transform them in metaphor and expressions instead of just asking questions.
     Your goal: to build the user's smoking profile through natural conversation.
     You have access to a tool:
     - update_smoker_profile: call it on every turn with only profile information explicitly given in the latest user message.
@@ -92,11 +93,16 @@ class Chat < ApplicationRecord
 
     update!(user: user)
 
-    user.update!(
-      nickname: profile_data["nickname"],
-      birth_date: Date.new(profile_data["birth_year"].to_i, 1, 1),
-      start_smoking_year: profile_data["start_smoking_year"]
-    )
+    if user.present?
+      user.update!(
+        {
+          birth_date: Date.new(profile_data["birth_year"].to_i, 1, 1),
+          start_smoking_year: profile_data["start_smoking_year"]
+        }.merge(
+          user.smoker_profiles.empty? && profile_data["nickname"].present? ? { nickname: profile_data["nickname"] } : {}
+        )
+      )
+    end
 
     profile = smoker_profile
     if profile.nil?
