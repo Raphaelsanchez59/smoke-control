@@ -1,25 +1,33 @@
-<%# app/views/chats/show.html.erb %>
 <div class="container py-4 chat-page" data-controller="typing" data-action="submit->typing#show">
-  <div id="messages" data-controller="scroll-bottom" data-typing-target="messages">
-    <%= render @messages %>
-  </div>
-  <% if @chat.done? || @chat.awaiting_login? %>
-    <div class="d-flex justify-content-start mb-3">
-      <div class="bubble bubble-bot">
-        🚬💀 By the way, I smoked <strong><%= pluralize(@chat.cigarettes_smoked, "cigarette") %></strong> while talking to you.
+  <div class="row g-4 align-items-end">
+    <div class="col-12 col-lg-7">
+      <div id="messages" data-controller="scroll-bottom" data-typing-target="messages"  >
+        <%= render @messages %>
+      </div>
+      <% if @chat.done? || @chat.awaiting_login? %>
+        <div class="d-flex justify-content-start mb-3">
+          <div class="bubble bubble-bot">
+            🚬💀 By the way, I smoked <strong><%= pluralize(@chat.cigarettes_smoked, "cigarette") %></strong> while talking to you.
+          </div>
+        </div>
+      <% end %>
+      <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
+      <div id="new_message_container">
+        <% if @chat.awaiting_login? %>
+          <%= render "chats/next_step", chat: @chat, profile: @profile %>
+        <% end %>
+        <%= render "messages/form", chat: @chat, message: @message %>
       </div>
     </div>
-  <% end %>
-  <%= render "chats/typing_bubble", chat: @chat if @chat.collecting? || @chat.done? %>
-  <div id="new_message_container">
-    <% if @chat.awaiting_login? %>
-      <%= render "chats/next_step", chat: @chat, profile: @profile %>
-    <% else %>
-      <%= render "messages/form", chat: @chat, message: @message %>
-    <% end %>
-  </div>
-  <%= turbo_stream_from @chat, :side_profile %>
-  <div id="<%= dom_id(@chat, :side_profile) %>">
-    <%= render "chats/side_profile", chat: @chat if @chat.profile_data.present? %>
+    <div class="col-12 col-lg-5">
+      <%= turbo_stream_from @chat, :side_profile %>
+      <div id="<%= dom_id(@chat, :side_profile) %>">
+        <% if @chat.profile_data.present? %>
+          <%= render "smoker_profiles/card",
+                     profile_data: @chat.profile_data,
+                     smoker_profil: @chat.smoker_profile %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>

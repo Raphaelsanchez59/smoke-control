@@ -26,11 +26,13 @@ class SmokerProfile < ApplicationRecord
        - E-cigarette puffs per day:#{e_cigarette&.puff_by_day || 'none'}
 
        Current year: #{Date.current.year}.
-       Provide an indicative estimate of this person's remaining life expectancy (in years, whole number) and write a short analytical paragraph in English (maximum 4 sentences). Specify that this is an indicative estimate and not medical advice. Respond ONLY with a JSON object. {"years_to_live": <integer>, "analysis": "<text>"}
+       Provide an indicative estimate of this person's remaining life expectancy (in years, whole number) and write a short analytical paragraph in English (maximum 4 sentences). Specify that this is an indicative estimate and not medical advice.
+       Generate a concise title based only on these profile details except the name, the year of birth, the life expectancy, the number of cigarettes per day, and the start smoking year, and include it in the JSON response
+       Respond ONLY with a JSON object. {"years_to_live": <integer>, "analysis": "<text>", "title": "<text>"}
     PROMPT
 
     data = JSON.parse(RubyLLM.chat.ask(prompt).content[/\{.*\}/m])
-    update!(years_to_live: data["years_to_live"], content: data["analysis"])
+    update!(years_to_live: data["years_to_live"], content: data["analysis"], name: data["title"])
   rescue JSON::ParserError, TypeError, RubyLLM::Error => e
     Rails.logger.error("[Smokey] analyse impossible : #{e.message}")
   end
