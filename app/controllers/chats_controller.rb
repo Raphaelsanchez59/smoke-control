@@ -24,7 +24,7 @@ class ChatsController < ApplicationController
     @profile = if @chat.awaiting_login?
                  @chat.save_data_profile!(current_user)
                elsif @chat.done?
-                 current_user.smoker_profiles.order(:created_at).last
+                   @chat.smoker_profile
                end
   end
 
@@ -38,6 +38,7 @@ class ChatsController < ApplicationController
       @ruby_llm_chat = RubyLLM.chat
       build_conversation_history
       @ruby_llm_chat.with_tools(UpdateSmokerProfileTool.new(chat: @chat))
+                    .with_tool_options(choice: :required, calls: :one)
 
       response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content)
       Message.create!(role: "assistant", content: response.content, chat: @chat)
