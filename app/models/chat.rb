@@ -26,7 +26,7 @@ class Chat < ApplicationRecord
     Corrected values replace the previously saved values.
     Formatting: put in bold (**like this**) only the information you are asking the user for, nothing else.
     Do not mention connection or analysis: the interface handles that.
-    Do not offer any medical advice. Answer concisely.
+    Do not offer any medical advice. Answer concisely. Do not use em dashes (—); use commas or colons instead.
   PROMPT
 
   def collecting?
@@ -39,6 +39,18 @@ class Chat < ApplicationRecord
 
   def done?
     step == "done"
+  end
+
+  def cigarettes_smoked
+    ordered = messages.order(:created_at).to_a
+
+    ordered.each_cons(2).sum do |previous, current|
+      if previous.role == "user" && current.role == "assistant"
+        ((current.created_at - previous.created_at) / 4).ceil
+      else
+        0
+      end
+    end
   end
 
   def report_next?

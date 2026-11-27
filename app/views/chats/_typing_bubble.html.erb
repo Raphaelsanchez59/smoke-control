@@ -2,15 +2,25 @@
   <div class="d-flex justify-content-start mb-3">
     <div class="bubble bubble-bot">
       <% if chat.report_next? %>
-        <div class="text-muted d-flex align-items-center gap-2">
-          <span class="spinner-border spinner-border-sm" role="status"></span>
-          Ok, I'm working on your profile…
+        <div class="text-muted d-flex align-items-center gap-3">
+          <div class="cigarette-loader" role="status">
+            <span class="cig-ember">
+              <span class="cig-smoke"></span>
+              <span class="cig-smoke"></span>
+            </span>
+            <span class="cig-paper"></span>
+            <span class="cig-filter"></span>
+          </div>
+          Smoking the whole pack while I build your profile…
         </div>
       <% else %>
-        <div class="d-flex gap-1 py-1" role="status">
-          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
-          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
-          <span class="spinner-grow spinner-grow-sm text-secondary"></span>
+        <div class="cigarette-loader" role="status">
+          <span class="cig-ember">
+            <span class="cig-smoke"></span>
+            <span class="cig-smoke"></span>
+          </span>
+          <span class="cig-paper"></span>
+          <span class="cig-filter"></span>
         </div>
       <% end %>
     </div>
