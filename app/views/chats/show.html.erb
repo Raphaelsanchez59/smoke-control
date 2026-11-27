@@ -18,7 +18,8 @@
         <% if @chat.profile_data.present? %>
           <%= render "smoker_profiles/card",
                      profile_data: @chat.profile_data,
-                     smoker_profil: @chat.smoker_profile %>
+                     smoker_profil: @chat.smoker_profile,
+                     show_profile_content: true %>
         <% end %>
       </div>
     </div>

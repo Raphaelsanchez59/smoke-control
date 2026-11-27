@@ -10,7 +10,9 @@
           <% @smoker_profiles.each do |profile| %>
             <%= render "smoker_profiles/card",
                        profile_data: profile.chat&.profile_data,
-                       smoker_profil: profile %>
+                       smoker_profil: profile,
+                       show_profile_content: false,
+                       show_delete_button: true %>
           <% end %>
         </div>
         <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-hidden="true">

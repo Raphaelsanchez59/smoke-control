@@ -27,7 +27,7 @@ class SmokerProfile < ApplicationRecord
 
        Current year: #{Date.current.year}.
        Provide an indicative estimate of this person's remaining life expectancy (in years, whole number) and write a short analytical paragraph in English (maximum 4 sentences). Specify that this is an indicative estimate and not medical advice.
-       Generate a concise title based only on these profile details except the name, the year of birth, the life expectancy, the number of cigarettes per day, and the start smoking year, and include it in the JSON response
+       Generate a short, darkly humorous using the estimated age at the end of life (current age + years_to_live) as an uncertain joke, never as a prediction or deadline. Avoid generic labels. Example: "Smokey is aiming for the XX year mark". If the age or estimate is unavailable, do not invent a number, include it in the JSON response
        Respond ONLY with a JSON object. {"years_to_live": <integer>, "analysis": "<text>", "title": "<text>"}
     PROMPT
 
