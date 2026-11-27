@@ -1,9 +1,11 @@
 <%
   profile_data = local_assigns[:profile_data] # Depuis le chat (chats)
   smoker_profil = local_assigns[:smoker_profil] # Depuis la Home (smoker_profiles) et le chat (chats)
+  show_profile_content = local_assigns.fetch(:show_profile_content, false)
+  show_delete_button = local_assigns.fetch(:show_delete_button, false)
   smoker_profile = smoker_profil
   cigarette_type = profile_data ? profile_data["smoker_type"] : smoker_profile&.cigarette_type
-  profile_name = profile_data ? profile_data["nickname"].presence || smoker_profile&.name : smoker_profile&.name
+  profile_name = smoker_profile&.name.presence || profile_data&.[]("nickname")
   profile_content = profile_data ? profile_data["content"].presence || smoker_profile&.content : smoker_profile&.content
   profile_image = if profile_data
                     profile_data["image"].presence || smoker_profile&.image.presence ||
@@ -56,7 +58,7 @@
             style: "height: 200px; width: 100%; object-fit: contain; background-color: #ffffff;",
             alt: profile_name.presence || "Smoker profile"
           ) %>
-      <% unless profile_data %>
+      <% if show_delete_button %>
         <%= link_to "&times;".html_safe,
                     "#deleteProfileModal",
                     class: "btn btn-light border border-secondary-subtle rounded-3 position-absolute top-0 end-0 m-2 fw-bold z-2",
@@ -87,14 +89,14 @@
         <h3 class="h4 fw-bold border-bottom pb-2 mb-0">
           <%= profile_name %>
         </h3>
-      <% elsif profile_content.present? %>
+      <% elsif profile_content.present? && smoker_profil.present? %>
         <h3 class="h4 fw-bold border-bottom pb-2 mb-0">
           <%= link_to profile_name.presence || "Unnamed Profile",
                       smoker_profile_path(smoker_profil),
-                      class: "text-reset text-decoration-none stretched-link" %> ici 2
+                      class: "text-reset text-decoration-none stretched-link" %>
         </h3>
       <% end %>
-      <% if profile_data && profile_content.present? %>
+      <% if show_profile_content && profile_content.present? %>
         <p class="text-body-secondary mb-0"><%= profile_content %></p>
       <% end %>
       <div class="bg-body rounded-3 p-3 text-center border vstack gap-1">
@@ -107,7 +109,7 @@
         <div class="small text-muted mt-1">years estimated</div>
         <hr class="my-2">
         <div class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.05em;">
-          End of life
+          💀 End of life
         </div>
         <div class="fw-bold mt-1"><%= end_year || "—" %></div>
       </div>
